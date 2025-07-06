@@ -6,5 +6,6 @@ data class Book(
     val tacgia: String,
     val namxb: String,
     val hinhanh: Int,
+    val mota: String,
     val favorite: Boolean = false
 )

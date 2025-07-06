@@ -6,6 +6,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 
 @Composable
 fun AppNavHost(
@@ -27,6 +29,13 @@ fun AppNavHost(
         }
         composable(NavigationItem.SAVED.route) {
             SavedScreen(navController, viewModel = bookViewModel)
+        }
+        composable(
+            route = NavigationItem.DETAIL.route,
+            arguments = listOf(navArgument("bookId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val bookId = backStackEntry.arguments?.getInt("bookId")
+            BookDetails(navController, bookId = bookId, viewModel = bookViewModel)
         }
     }
 }

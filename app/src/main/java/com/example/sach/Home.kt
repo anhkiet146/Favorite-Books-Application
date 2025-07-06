@@ -18,6 +18,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.filled.Home
@@ -86,7 +87,10 @@ fun HomeScreen(
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(0.45f),
+                        .aspectRatio(0.45f)
+                        .clickable {
+                            navController.navigate(NavigationItem.DETAIL.createRoute(book.id))
+                        },
                     elevation = CardDefaults.cardElevation(4.dp)
                 ) {
                     Column(

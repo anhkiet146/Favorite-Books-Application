@@ -20,4 +20,8 @@ class BookViewModel : ViewModel() {
     fun getFavoriteBooks(): List<Book> {
         return _books.filter { it.favorite }
     }
+
+    fun getBookById(bookId: Int): Book? {
+        return _books.find { it.id == bookId }
+    }
 }
