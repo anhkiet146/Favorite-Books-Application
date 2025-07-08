@@ -1,0 +1,233 @@
+Index: app/src/main/java/com/example/sach/Home.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.sach\r\n\r\nimport androidx.annotation.DrawableRes\r\nimport androidx.compose.foundation.Image\r\nimport androidx.compose.foundation.layout.*\r\nimport androidx.compose.foundation.lazy.grid.*\r\nimport androidx.compose.material.icons.Icons\r\nimport androidx.compose.material.icons.filled.Favorite\r\nimport androidx.compose.material.icons.filled.FavoriteBorder\r\nimport androidx.compose.material3.*\r\nimport androidx.compose.runtime.*\r\nimport androidx.compose.ui.Alignment\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.res.painterResource\r\nimport androidx.compose.ui.text.style.TextAlign\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.lifecycle.viewmodel.compose.viewModel\r\nimport androidx.navigation.NavHostController\r\nimport androidx.compose.foundation.ExperimentalFoundationApi\r\nimport androidx.compose.foundation.border\r\nimport androidx.compose.foundation.clickable\r\nimport androidx.compose.foundation.shape.CircleShape\r\nimport androidx.compose.foundation.shape.RoundedCornerShape\r\nimport androidx.compose.material.icons.filled.Home\r\nimport androidx.compose.material.icons.filled.Search\r\nimport androidx.compose.ui.draw.clip\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.compose.ui.layout.ContentScale\r\nimport androidx.compose.ui.res.dimensionResource\r\nimport androidx.compose.ui.text.font.FontWeight\r\nimport androidx.compose.ui.tooling.preview.Preview\r\nimport androidx.compose.ui.unit.sp\r\nimport androidx.navigation.compose.rememberNavController\r\n\r\n@OptIn(ExperimentalFoundationApi::class)\r\n@Composable\r\nfun HomeScreen(\r\n    navController: NavHostController,\r\n    viewModel: BookViewModel = viewModel()\r\n) {\r\n    //navController: NavHostController,\r\n//    val navController = rememberNavController()\r\n    var searchQuery by remember { mutableStateOf(\"\") }\r\n\r\n    val filteredBooks = viewModel.books.filter {\r\n        it.tensach.contains(searchQuery, ignoreCase = true) ||\r\n                it.tacgia.contains(searchQuery, ignoreCase = true)\r\n    }\r\n\r\n    Column(\r\n        modifier = Modifier\r\n            .fillMaxSize()\r\n            .padding(16.dp)\r\n    ) {\r\n        Row(\r\n\r\n        ) {\r\n            LogoIcon()\r\n            Text(\r\n                text = \"Trang chủ\",\r\n                textAlign = TextAlign.Center,\r\n                style = MaterialTheme.typography.headlineMedium,\r\n                modifier = Modifier.fillMaxWidth()\r\n            )\r\n        }\r\n        Spacer(modifier = Modifier.height(8.dp))\r\n\r\n        OutlinedTextField(\r\n            value = searchQuery,\r\n            onValueChange = { searchQuery = it },\r\n            label = { Text(\"Tìm kiếm sách...\") },\r\n            modifier = Modifier.fillMaxWidth()\r\n        )\r\n\r\n\r\n\r\n        Spacer(modifier = Modifier.height(16.dp))\r\n\r\n        LazyVerticalGrid(\r\n            columns = GridCells.Fixed(2),\r\n            modifier = Modifier.weight(1f),\r\n            contentPadding = PaddingValues(8.dp),\r\n            verticalArrangement = Arrangement.spacedBy(12.dp),\r\n            horizontalArrangement = Arrangement.spacedBy(12.dp)\r\n        ) {\r\n            items(filteredBooks) { book ->\r\n                Card(\r\n                    modifier = Modifier\r\n                        .fillMaxWidth()\r\n                        .aspectRatio(0.45f)\r\n                        .clickable {\r\n                            navController.navigate(NavigationItem.DETAIL.createRoute(book.id))\r\n                        },\r\n                    elevation = CardDefaults.cardElevation(4.dp)\r\n                ) {\r\n                    Column(\r\n                        modifier = Modifier.padding(8.dp),\r\n                    ) {\r\n                        Image(\r\n                            painter = painterResource(id = book.hinhanh),\r\n                            contentDescription = null,\r\n                            modifier = Modifier\r\n                                .height(225.dp)\r\n                                .fillMaxWidth()\r\n                                .clip(RoundedCornerShape(25.dp))\r\n                        )\r\n\r\n                        Spacer(modifier = Modifier.height(8.dp))\r\n\r\n\r\n                        Text(\r\n                            text = book.tensach,\r\n                            fontWeight = FontWeight.Bold,\r\n                            fontSize = 20.sp\r\n                            )\r\n                        Text(book.tacgia, style = MaterialTheme.typography.bodySmall)\r\n                        Text(\"Năm XB: ${book.namxb}\", style = MaterialTheme.typography.bodySmall)\r\n\r\n                        Spacer(modifier = Modifier.weight(1f))\r\n\r\n\r\n                        IconButton(\r\n                            onClick = {\r\n                                viewModel.toggleFavorite(book.id)\r\n                            },\r\n                            modifier = Modifier.align(Alignment.End)\r\n                        ) {\r\n                            Icon(\r\n                                imageVector = if (book.favorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,\r\n                                contentDescription = \"Thêm vào mục yêu thích\"\r\n                            )\r\n                        }\r\n                    }\r\n                }\r\n            }\r\n        }\r\n\r\n        Spacer(modifier = Modifier.height(8.dp))\r\n        Row(\r\n            modifier = Modifier.padding(start = 120.dp),\r\n            verticalAlignment = Alignment.CenterVertically,\r\n            horizontalArrangement = Arrangement.SpaceBetween\r\n        ) {\r\n            IconButton(\r\n                onClick = {\r\n                    navController.navigate(NavigationItem.GET_START.route)\r\n                }\r\n\r\n            ) {\r\n                Icon(\r\n                    imageVector = Icons.Default.Home,\r\n                    contentDescription = null,\r\n                    tint = MaterialTheme.colorScheme.primary\r\n                )\r\n            }\r\n            IconButton(\r\n                onClick = {\r\n                    navController.navigate(NavigationItem.SAVED.route)\r\n                }\r\n            ) {\r\n                Icon(\r\n                    imageVector = Icons.Default.Favorite,\r\n                    contentDescription = \"Go to favorites\",\r\n                    tint = MaterialTheme.colorScheme.primary\r\n                )\r\n            }\r\n            IconButton(\r\n                onClick = {\r\n                    navController.navigate(NavigationItem.SAVED.route)\r\n                }\r\n            ) {\r\n                Icon(\r\n                    imageVector = Icons.Default.Search,\r\n                    contentDescription = \"Go to favorites\",\r\n                    tint = MaterialTheme.colorScheme.primary\r\n                )\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\n@Composable\r\nfun LogoIcon(\r\n    modifier: Modifier = Modifier\r\n) {\r\n    Image(\r\n        modifier = modifier\r\n            .size(64.dp)\r\n            .clip(MaterialTheme.shapes.small)\r\n            .border(1.dp, Color.Gray, MaterialTheme.shapes.small)\r\n            .padding(15.dp)\r\n            .clip(MaterialTheme.shapes.small),\r\n        contentScale = ContentScale.Crop,\r\n        painter = painterResource(R.drawable.logo),\r\n\r\n        contentDescription = null\r\n    )\r\n}\r\n\r\n//@Preview(showBackground = true)\r\n//@Composable\r\n//fun PreviewHomeScreen(){\r\n//    val bookViewModel: BookViewModel = viewModel()\r\n//    HomeScreen()\r\n//}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/sach/Home.kt b/app/src/main/java/com/example/sach/Home.kt
+--- a/app/src/main/java/com/example/sach/Home.kt	(revision 75556f3ccaac059df16da53a01e8496f591a19f4)
++++ b/app/src/main/java/com/example/sach/Home.kt	(date 1751824080906)
+@@ -112,7 +112,7 @@
+                             text = book.tensach,
+                             fontWeight = FontWeight.Bold,
+                             fontSize = 20.sp
+-                            )
++                        )
+                         Text(book.tacgia, style = MaterialTheme.typography.bodySmall)
+                         Text("Năm XB: ${book.namxb}", style = MaterialTheme.typography.bodySmall)
+ 
+@@ -201,5 +201,5 @@
+ //@Composable
+ //fun PreviewHomeScreen(){
+ //    val bookViewModel: BookViewModel = viewModel()
+-//    HomeScreen()
++//    HomeScreen(bookViewModel)
+ //}
+Index: .idea/gradle.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"GradleSettings\">\r\n    <option name=\"linkedExternalProjectsSettings\">\r\n      <GradleProjectSettings>\r\n        <option name=\"testRunner\" value=\"CHOOSE_PER_TEST\" />\r\n        <option name=\"externalProjectPath\" value=\"$PROJECT_DIR$\" />\r\n        <option name=\"gradleJvm\" value=\"#GRADLE_LOCAL_JAVA_HOME\" />\r\n        <option name=\"modules\">\r\n          <set>\r\n            <option value=\"$PROJECT_DIR$\" />\r\n            <option value=\"$PROJECT_DIR$/app\" />\r\n          </set>\r\n        </option>\r\n      </GradleProjectSettings>\r\n    </option>\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/gradle.xml b/.idea/gradle.xml
+--- a/.idea/gradle.xml	(revision 75556f3ccaac059df16da53a01e8496f591a19f4)
++++ b/.idea/gradle.xml	(date 1751813040287)
+@@ -1,5 +1,6 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
++  <component name="GradleMigrationSettings" migrationVersion="1" />
+   <component name="GradleSettings">
+     <option name="linkedExternalProjectsSettings">
+       <GradleProjectSettings>
+Index: app/src/main/java/com/example/sach/FakeBookData.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.sach\r\n\r\nfun DSsach(): List<Book> = listOf(\r\n    Book(\r\n        id = 13,\r\n        tensach = \"Nhật ký crush bạn cùng bàn\",\r\n        tacgia = \"Mia\",\r\n        namxb = \"2025\",\r\n        mota = \"\\\"Nhật Ký Crush Bạn Cùng Bàn\\\" là một câu chuyện nhẹ nhàng, hài hước và đầy cảm xúc về tuổi học trò – nơi những rung động đầu đời bắt đầu từ ánh mắt, nụ cười và những lần vô tình chạm nhau. Qua những trang nhật ký ngây ngô nhưng chân thành, nhân vật chính kể lại hành trình \\\"thầm thương trộm nhớ\\\" người bạn cùng bàn – từ những khoảnh khắc vụng về đến những cảm xúc trong trẻo, đáng yêu khó quên.\",\r\n        hinhanh = R.drawable.nhatky\r\n    ),\r\n    Book(\r\n        id = 2,\r\n        tensach = \"Đồi gió hú\",\r\n        tacgia = \"Ellis Bell\",\r\n        namxb = \"1847\",\r\n        hinhanh = R.drawable.doigiohu,\r\n        mota = \"\\\"Đồi Gió Hú\\\" là một bi kịch tình yêu đầy ám ảnh và mãnh liệt giữa Heathcliff và Catherine, diễn ra trên vùng hoang mạc u ám của Yorkshire nước Anh. Với bối cảnh lạnh lẽo và tâm trạng dữ dội, tác phẩm khắc họa sâu sắc những cảm xúc đen tối như thù hận, đam mê và trả thù, đồng thời phản ánh sự giằng xé giữa tình yêu và định kiến xã hội. Đây là một trong những kiệt tác văn học kinh điển với phong cách u tối và nội tâm sâu sắc.\"\r\n    ),\r\n    Book(\r\n        id = 3,\r\n        tensach = \"Nhà giả kim\",\r\n        tacgia = \"Paulo Coelho\",\r\n        namxb = \"1988\",\r\n        hinhanh = R.drawable.nh__gi_kim,\r\n        mota = \"\\\"Nhà Giả Kim\\\" là hành trình phiêu lưu đầy cảm hứng của Santiago – một chàng chăn cừu trẻ người Tây Ban Nha quyết tâm theo đuổi “Giấc mơ lớn” của đời mình. Trên đường đi, cậu gặp gỡ nhiều con người, vượt qua nhiều thử thách, và dần khám phá ra chân lý: kho báu thực sự nằm trong chính trái tim và sự can đảm theo đuổi ước mơ. Với văn phong giản dị mà sâu sắc, cuốn sách là lời nhắn nhủ mạnh mẽ về niềm tin, định mệnh và hành trình tìm kiếm bản thân.\"\r\n    ),\r\n    Book(\r\n        id = 11,\r\n        tensach = \"Suối nguồn\",\r\n        tacgia = \"Ayn Rand\",\r\n        namxb = \"1943\",\r\n        hinhanh = R.drawable.suoinguon,\r\n        mota = \"\\\"Suối Nguồn\\\" kể về hành trình đấu tranh không khoan nhượng của Howard Roark, một kiến trúc sư trẻ tài năng và độc lập, người kiên định theo đuổi lý tưởng sáng tạo cá nhân chống lại xã hội khuôn mẫu và thỏa hiệp. Roark từ chối tuân theo chuẩn mực thông thường, dù phải trả giá bằng sự nghiệp và danh tiếng, miễn là được sống đúng với bản ngã và tầm nhìn nghệ thuật của mình.\"\r\n    ),\r\n    Book(\r\n        id = 5,\r\n        tensach = \"Đắc nhân tâm\",\r\n        tacgia = \"Dale Carnegie\",\r\n        namxb = \"1950\",\r\n        hinhanh = R.drawable.c_nh_n_t_m,\r\n        mota = \"\\\"Đắc Nhân Tâm\\\" là cuốn sách hướng dẫn con người cách cư xử, giao tiếp và tạo ảnh hưởng một cách chân thành, thông qua việc thấu hiểu tâm lý người khác. Với những nguyên tắc đơn giản nhưng sâu sắc, sách giúp người đọc xây dựng mối quan hệ tốt đẹp, tạo thiện cảm, và thuyết phục người khác mà không gây đối đầu.\"\r\n    ),\r\n    Book(\r\n        id = 6,\r\n        tensach = \"Cánh đồng bất tận\",\r\n        tacgia = \"Nguyễn Ngọc Tư\",\r\n        namxb = \"2005\",\r\n        hinhanh = R.drawable.canh_dong_bat_tan,\r\n        mota = \"\\\"Cánh đồng bất tận\\\" là một truyện dài mang màu sắc đau đáu, u buồn nhưng đẹp đẽ, khắc họa cuộc sống cơ cực và tâm hồn bị tổn thương của những con người nhỏ bé giữa miền Tây sông nước. Qua hành trình trôi dạt của hai đứa trẻ cùng người cha đầy giằng xé, tác phẩm mở ra một thế giới đầy cô đơn, bạo lực và tha thứ, phản ánh sự tan vỡ của gia đình và nỗi đau âm ỉ của con người bị đời xô dạt.\"\r\n    ),\r\n    Book(\r\n        id = 19,\r\n        tensach = \"Tôi tài giỏi, bạn cũng thế!\",\r\n        tacgia = \"Adam Khoo\",\r\n        namxb = \"2019\",\r\n        hinhanh = R.drawable.toi_tai_gioi,\r\n        mota = \"\\\"Tôi tài giỏi, bạn cũng thế!\\\" là cuốn sách truyền cảm hứng mạnh mẽ cho học sinh, sinh viên và những người đang tìm lại niềm tin vào bản thân. Adam Khoo – một học sinh từng bị xem là “bất tài” – đã kể lại hành trình vươn lên của chính mình nhờ tư duy tích cực, phương pháp học thông minh và niềm tin vào bản thân. Thông điệp chính của sách là: mọi người đều có thể giỏi – nếu biết cách học và tin vào chính mình.\\n\" +\r\n                \"\\n\"\r\n    ),\r\n    Book(\r\n        id = 8,\r\n        tensach = \"Bố già\",\r\n        tacgia = \"Mario Puzo\",\r\n        namxb = \"1969\",\r\n        hinhanh = R.drawable.bo_gia_poster,\r\n        mota = \"\\\"Bố Già\\\" là câu chuyện huyền thoại về gia đình mafia Corleone – đứng đầu là Don Vito Corleone, một ông trùm quyền lực nhưng đầy nguyên tắc, trí tuệ và tình cảm. Tác phẩm không chỉ là bức tranh chân thực, sắc sảo về thế giới tội phạm có tổ chức ở Mỹ thế kỷ 20, mà còn là biểu tượng của danh dự, lòng trung thành, tình cha con và bi kịch quyền lực.\"\r\n    ),\r\n    Book(\r\n        id = 9,\r\n        tensach = \"Thép đã tôi thế đấy\",\r\n        tacgia = \"Nikolai A. Ostrovsky\",\r\n        namxb = \"1932\",\r\n        hinhanh = R.drawable.th_p___t_i_th_y__,\r\n        mota = \"\\\"Thép đã tôi thế đấy\\\" là cuốn tiểu thuyết giàu lý tưởng, khắc họa chân dung người thanh niên Pavel Korchagin – hình mẫu của lớp thanh niên cách mạng Liên Xô kiên cường, quả cảm và bất khuất. Qua hành trình vượt qua gian khổ, bệnh tật và thử thách, tác phẩm truyền đi thông điệp mạnh mẽ về ý chí, nghị lực và sự rèn luyện bản thân như “thép đã tôi trong lửa đỏ và nước lạnh”.\"\r\n    ),\r\n    Book(\r\n        id = 10,\r\n        tensach = \"Những Tấm Lòng Cao Cả\",\r\n        tacgia = \"Edmondo De Amicis\",\r\n        namxb = \"1886\",\r\n        hinhanh = R.drawable.nhung_tam_long_cao_ca,\r\n        mota = \"\\\"Những tấm lòng cao cả\\\" là một cuốn tiểu thuyết cảm động viết dưới hình thức nhật ký của một cậu bé tên Enrico, ghi lại một năm học đầy ý nghĩa tại một trường tiểu học ở Ý. Qua từng trang viết giản dị, ấm áp, tác phẩm ca ngợi tình thầy trò, tình bạn, lòng hiếu thảo, lòng yêu nước và đức hy sinh — những phẩm chất nhân văn đẹp đẽ và sâu sắc của con người.\"\r\n    ),\r\n    Book(\r\n        id = 4,\r\n        tensach = \"Một Thoáng Ta Rực Rỡ Ở Nhân Gian\",\r\n        tacgia = \"Ocean Vương\",\r\n        namxb = \"2019\",\r\n        hinhanh = R.drawable.mot_thoang_ta_ruc_ro_o_nhan_gian_bia,\r\n        mota = \"\\\"Một thoáng ta rực rỡ ở nhân gian\\\" là bức thư chưa từng được gửi của một chàng trai trẻ gốc Việt tên Little Dog gửi cho người mẹ mù chữ của mình. Thư kể về tuổi thơ dữ dội của cậu tại Mỹ, về chiến tranh, nhập cư, bạo lực, tình yêu đồng tính đầu đời và thân phận thiểu số. Với văn phong như thơ, đầy ám ảnh và chân thành, cuốn sách là hành trình đi tìm bản sắc, chữa lành vết thương và khẳng định sự tồn tại mong manh nhưng rực rỡ của con người.\"\r\n    ),\r\n    Book(\r\n        id = 12,\r\n        tensach = \"Đi Tìm Lẽ Sống\",\r\n        tacgia = \"Viktor E. Frankl\",\r\n        namxb = \"1946\",\r\n        hinhanh = R.drawable.di_tim_le_song_tb_2022,\r\n        mota = \"\\\"Đi tìm lẽ sống\\\" là một cuốn sách phi thường, trong đó bác sĩ tâm thần Viktor E. Frankl thuật lại trải nghiệm sống sót qua trại tập trung Đức Quốc xã và từ đó khám phá ra một chân lý sâu sắc: con người có thể chịu đựng bất kỳ điều gì – miễn là họ tìm thấy ý nghĩa trong nỗi đau đó. Cuốn sách là minh chứng rằng ngay cả giữa địa ngục trần gian, lẽ sống vẫn có thể được tìm thấy và chính điều đó cứu rỗi con người.\"\r\n    ),\r\n    Book(\r\n        id = 1,\r\n        tensach = \"Sự Im Lặng Của Bầy Cừu\",\r\n        tacgia = \"Thomas Harris\",\r\n        namxb = \"1988\",\r\n        hinhanh = R.drawable.silence3,\r\n        mota = \"\\\"Sự im lặng của bầy cừu\\\" là một tiểu thuyết giật gân – tâm lý tội phạm xoay quanh cuộc truy đuổi tên sát nhân hàng loạt “Buffalo Bill” của đặc vụ FBI tập sự Clarice Starling. Để phá án, cô buộc phải tìm đến Tiến sĩ Hannibal Lecter – một bác sĩ tâm thần thiên tài nhưng cũng là kẻ ăn thịt người khét tiếng. Cuộc đối thoại giữa hai trí tuệ – một bên là kẻ sát nhân đầy mị lực, một bên là cô gái trẻ thông minh nhưng tổn thương – đã tạo nên một trò chơi tâm lý căng thẳng, đầy ám ảnh và lôi cuốn đến nghẹt thở.\"\r\n    ),\r\n    Book(\r\n        id = 14,\r\n        tensach = \"Nhà Tù Shawshank\",\r\n        tacgia = \"Stephen King\",\r\n        namxb = \"1994\",\r\n        hinhanh = R.drawable.shawshankredemptionmovieposter,\r\n        mota = \"\\\"Nhà tù Shawshank\\\" là câu chuyện về hy vọng, tự do và nghị lực sống diễn ra trong khung cảnh u ám của một nhà tù biệt lập. Nhân vật chính, Andy Dufresne – một nhân viên ngân hàng bị kết án oan vì tội giết vợ – đã phải sống gần hai thập kỷ sau song sắt. Trong bóng tối của tuyệt vọng, anh vẫn kiên trì nuôi hy vọng, kết bạn với tù nhân Red, và lặng lẽ lên kế hoạch tự giải thoát bằng chính trí tuệ và lòng tin vững chắc.\"\r\n    ),\r\n    Book(\r\n        id = 15,\r\n        tensach = \"Mắt Biếc\",\r\n        tacgia = \"Nguyễn Nhật Ánh\",\r\n        namxb = \"1990\",\r\n        hinhanh = R.drawable.nxbtre_full_01372019_043734,\r\n        mota = \"\\\"Mắt biếc\\\" là một câu chuyện buồn, nhẹ nhàng và sâu lắng về tình yêu đơn phương, tuổi thơ ngây dại và những lỡ làng không thể nói thành lời. Qua nhân vật Ngạn, một cậu bé lớn lên với trái tim tràn đầy yêu thương dành cho cô bạn Hà Lan có đôi mắt biếc, tác phẩm là bản tình ca buồn về mối tình đẹp nhưng đầy nuối tiếc, như một làn gió trong trẻo lướt qua cuộc đời rồi tan vào hoài niệm.\"\r\n    ),\r\n    Book(\r\n        id = 16,\r\n        tensach = \"Dấu Chân Trên Cát\",\r\n        tacgia = \"Nguyễn Minh Tiến\",\r\n        namxb = \"2004\",\r\n        hinhanh = R.drawable.dau_chan_tren_cat_nguyen_phong,\r\n        mota = \"\\\"Dấu chân trên cát\\\" là một bài thơ ngắn nhưng sâu sắc, kể về một giấc mơ của người tín hữu – khi cùng Chúa bước đi trên bãi biển cuộc đời. Nhìn lại phía sau, họ thấy có những lúc có hai dấu chân (của mình và Chúa), nhưng trong những lúc đau khổ nhất, chỉ còn một dấu chân. Người đó trách Chúa vì đã bỏ rơi mình trong khổ đau, nhưng Chúa đáp:\\n\" +\r\n                \"\\n\" +\r\n                \"“Chính lúc con đau khổ nhất... là lúc Ta đã bế con trên tay.”\"\r\n    ),\r\n    Book(\r\n        id = 17,\r\n        tensach = \"Lặng Lẽ SaPa\",\r\n        tacgia = \"Nguyễn Thành Long\",\r\n        namxb = \"2024\",\r\n        hinhanh = R.drawable.lang_le_sapa_e21d2937bedc4ff5b6f594e508893a6a_master,\r\n        mota = \"\\\"Lặng lẽ Sa Pa\\\" là một truyện ngắn giàu chất trữ tình và nhân văn, kể về cuộc gặp gỡ tình cờ giữa một ông hoạ sĩ, một cô kĩ sư và một người thanh niên làm công tác khí tượng trên đỉnh núi Sa Pa. Qua cuộc trò chuyện giản dị, tác phẩm tôn vinh vẻ đẹp thầm lặng mà cao quý của những con người đang ngày đêm cống hiến cho đất nước trong âm thầm, giữa thiên nhiên hùng vĩ mà lặng lẽ.\"\r\n    ),\r\n    Book(\r\n        id = 7,\r\n        tensach = \"Và Rồi Chẳng Còn Ai\",\r\n        tacgia = \"Agatha Christie\",\r\n        namxb = \"2021\",\r\n        hinhanh = R.drawable.nxbtre_full_24582021_115846,\r\n        mota = \"\\\"Và rồi chẳng còn ai\\\" là một trong những kiệt tác trinh thám nổi bật nhất của Agatha Christie, xoay quanh mười người xa lạ được mời tới một hòn đảo biệt lập. Tại đây, từng người trong số họ bị buộc tội đã gây ra cái chết cho người khác trong quá khứ mà chưa từng bị pháp luật trừng phạt. Trong khi còn chưa kịp tìm hiểu chuyện gì đang diễn ra, họ bắt đầu lần lượt chết một cách bí ẩn, đúng theo lời bài đồng dao “Mười chú lính chì” treo trên tường. Không có cách nào rời khỏi đảo, cũng không có sự giúp đỡ từ bên ngoài, nỗi hoảng loạn lan rộng khi kẻ giết người dường như đang ẩn mình giữa họ. Với nhịp truyện căng thẳng, kết thúc bất ngờ và cấu trúc phá cách không có thám tử chính, tác phẩm đã trở thành hình mẫu kinh điển của thể loại “trinh thám không lối thoát” và là một trong những cuốn sách trinh thám bán chạy nhất mọi thời đại.\\n\" +\r\n                \"\\n\"\r\n    ),\r\n    Book(\r\n        id = 18,\r\n        tensach = \"Harry Potter Và Hòn Đá Phù Thủy\",\r\n        tacgia = \"J.K.Rowling\",\r\n        namxb = \"2022\",\r\n        hinhanh = R.drawable.hr1,\r\n        mota = \"\\\"Harry Potter và Hòn đá Phù thủy\\\" là cuốn tiểu thuyết mở đầu cho hành trình kỳ diệu của cậu bé Harry Potter – một đứa trẻ mồ côi sống khổ sở trong gia đình Dursley – cho đến khi phát hiện ra mình là một phù thủy. Ở tuổi 11, Harry được mời theo học tại Trường Phù thủy và Pháp sư Hogwarts, nơi cậu dần khám phá thế giới phép thuật cùng những người bạn mới như Ron Weasley và Hermione Granger. Trong khi học cách sử dụng phép thuật và hòa nhập vào môi trường mới, Harry vô tình bị cuốn vào một bí ẩn liên quan đến Hòn đá Phù thủy – một vật có thể mang lại sự bất tử. Câu chuyện dần hé lộ về quá khứ của Harry, sự thật về cái chết của cha mẹ cậu, và bóng dáng của kẻ thù nguy hiểm Chúa tể Voldemort. Cuốn sách mang màu sắc kỳ ảo, kịch tính và ấm áp, là bước khởi đầu cho một trong những loạt truyện thiếu nhi nổi tiếng và có ảnh hưởng sâu rộng nhất trên toàn thế giới.\"\r\n    ),\r\n//    Book(\r\n//        id = 20,\r\n//        tensach = \"Và Rồi Chẳng Còn Ai\",\r\n//        tacgia = \"Agatha Christie\",\r\n//        namxb = \"2021\",\r\n//        hinhanh = R.drawable.nxbtre_full_24582021_115846,\r\n//        mota = \"\"\r\n//    ),\r\n//    Book(\r\n//        id = 21,\r\n//        tensach = \"Và Rồi Chẳng Còn Ai\",\r\n//        tacgia = \"Agatha Christie\",\r\n//        namxb = \"2021\",\r\n//        hinhanh = R.drawable.nxbtre_full_24582021_115846,\r\n//        mota = \"\"\r\n//    ),\r\n//    Book(\r\n//        id = 22,\r\n//        tensach = \"Và Rồi Chẳng Còn Ai\",\r\n//        tacgia = \"Agatha Christie\",\r\n//        namxb = \"2021\",\r\n//        hinhanh = R.drawable.nxbtre_full_24582021_115846,\r\n//        mota = \"\"\r\n//    ),\r\n)
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/sach/FakeBookData.kt b/app/src/main/java/com/example/sach/FakeBookData.kt
+--- a/app/src/main/java/com/example/sach/FakeBookData.kt	(revision 75556f3ccaac059df16da53a01e8496f591a19f4)
++++ b/app/src/main/java/com/example/sach/FakeBookData.kt	(date 1751909327388)
+@@ -2,12 +2,12 @@
+ 
+ fun DSsach(): List<Book> = listOf(
+     Book(
+-        id = 13,
+-        tensach = "Nhật ký crush bạn cùng bàn",
+-        tacgia = "Mia",
+-        namxb = "2025",
+-        mota = "\"Nhật Ký Crush Bạn Cùng Bàn\" là một câu chuyện nhẹ nhàng, hài hước và đầy cảm xúc về tuổi học trò – nơi những rung động đầu đời bắt đầu từ ánh mắt, nụ cười và những lần vô tình chạm nhau. Qua những trang nhật ký ngây ngô nhưng chân thành, nhân vật chính kể lại hành trình \"thầm thương trộm nhớ\" người bạn cùng bàn – từ những khoảnh khắc vụng về đến những cảm xúc trong trẻo, đáng yêu khó quên.",
+-        hinhanh = R.drawable.nhatky
++        id = 1,
++        tensach = "Sự Im Lặng Của Bầy Cừu",
++        tacgia = "Thomas Harris",
++        namxb = "1988",
++        hinhanh = R.drawable.suimlang,
++        mota = "\"Sự im lặng của bầy cừu\" là một tiểu thuyết giật gân – tâm lý tội phạm xoay quanh cuộc truy đuổi tên sát nhân hàng loạt “Buffalo Bill” của đặc vụ FBI tập sự Clarice Starling. Để phá án, cô buộc phải tìm đến Tiến sĩ Hannibal Lecter – một bác sĩ tâm thần thiên tài nhưng cũng là kẻ ăn thịt người khét tiếng. Cuộc đối thoại giữa hai trí tuệ – một bên là kẻ sát nhân đầy mị lực, một bên là cô gái trẻ thông minh nhưng tổn thương – đã tạo nên một trò chơi tâm lý căng thẳng, đầy ám ảnh và lôi cuốn đến nghẹt thở."
+     ),
+     Book(
+         id = 2,
+@@ -26,19 +26,19 @@
+         mota = "\"Nhà Giả Kim\" là hành trình phiêu lưu đầy cảm hứng của Santiago – một chàng chăn cừu trẻ người Tây Ban Nha quyết tâm theo đuổi “Giấc mơ lớn” của đời mình. Trên đường đi, cậu gặp gỡ nhiều con người, vượt qua nhiều thử thách, và dần khám phá ra chân lý: kho báu thực sự nằm trong chính trái tim và sự can đảm theo đuổi ước mơ. Với văn phong giản dị mà sâu sắc, cuốn sách là lời nhắn nhủ mạnh mẽ về niềm tin, định mệnh và hành trình tìm kiếm bản thân."
+     ),
+     Book(
+-        id = 11,
+-        tensach = "Suối nguồn",
+-        tacgia = "Ayn Rand",
+-        namxb = "1943",
+-        hinhanh = R.drawable.suoinguon,
+-        mota = "\"Suối Nguồn\" kể về hành trình đấu tranh không khoan nhượng của Howard Roark, một kiến trúc sư trẻ tài năng và độc lập, người kiên định theo đuổi lý tưởng sáng tạo cá nhân chống lại xã hội khuôn mẫu và thỏa hiệp. Roark từ chối tuân theo chuẩn mực thông thường, dù phải trả giá bằng sự nghiệp và danh tiếng, miễn là được sống đúng với bản ngã và tầm nhìn nghệ thuật của mình."
++        id = 4,
++        tensach = "Một Thoáng Ta Rực Rỡ Ở Nhân Gian",
++        tacgia = "Ocean Vương",
++        namxb = "2019",
++        hinhanh = R.drawable.mot_thoang_ta_ruc_ro_o_nhan_gian_bia,
++        mota = "\"Một thoáng ta rực rỡ ở nhân gian\" là bức thư chưa từng được gửi của một chàng trai trẻ gốc Việt tên Little Dog gửi cho người mẹ mù chữ của mình. Thư kể về tuổi thơ dữ dội của cậu tại Mỹ, về chiến tranh, nhập cư, bạo lực, tình yêu đồng tính đầu đời và thân phận thiểu số. Với văn phong như thơ, đầy ám ảnh và chân thành, cuốn sách là hành trình đi tìm bản sắc, chữa lành vết thương và khẳng định sự tồn tại mong manh nhưng rực rỡ của con người."
+     ),
+     Book(
+         id = 5,
+         tensach = "Đắc nhân tâm",
+         tacgia = "Dale Carnegie",
+         namxb = "1950",
+-        hinhanh = R.drawable.c_nh_n_t_m,
++        hinhanh = R.drawable.dac_nhan_tam_bia_1_0cf7b3fb92e044e1b9a90a82c1931223,
+         mota = "\"Đắc Nhân Tâm\" là cuốn sách hướng dẫn con người cách cư xử, giao tiếp và tạo ảnh hưởng một cách chân thành, thông qua việc thấu hiểu tâm lý người khác. Với những nguyên tắc đơn giản nhưng sâu sắc, sách giúp người đọc xây dựng mối quan hệ tốt đẹp, tạo thiện cảm, và thuyết phục người khác mà không gây đối đầu."
+     ),
+     Book(
+@@ -46,16 +46,16 @@
+         tensach = "Cánh đồng bất tận",
+         tacgia = "Nguyễn Ngọc Tư",
+         namxb = "2005",
+-        hinhanh = R.drawable.canh_dong_bat_tan,
++        hinhanh = R.drawable.nxbtre_full_30122019_111202,
+         mota = "\"Cánh đồng bất tận\" là một truyện dài mang màu sắc đau đáu, u buồn nhưng đẹp đẽ, khắc họa cuộc sống cơ cực và tâm hồn bị tổn thương của những con người nhỏ bé giữa miền Tây sông nước. Qua hành trình trôi dạt của hai đứa trẻ cùng người cha đầy giằng xé, tác phẩm mở ra một thế giới đầy cô đơn, bạo lực và tha thứ, phản ánh sự tan vỡ của gia đình và nỗi đau âm ỉ của con người bị đời xô dạt."
+     ),
+     Book(
+-        id = 19,
+-        tensach = "Tôi tài giỏi, bạn cũng thế!",
+-        tacgia = "Adam Khoo",
+-        namxb = "2019",
+-        hinhanh = R.drawable.toi_tai_gioi,
+-        mota = "\"Tôi tài giỏi, bạn cũng thế!\" là cuốn sách truyền cảm hứng mạnh mẽ cho học sinh, sinh viên và những người đang tìm lại niềm tin vào bản thân. Adam Khoo – một học sinh từng bị xem là “bất tài” – đã kể lại hành trình vươn lên của chính mình nhờ tư duy tích cực, phương pháp học thông minh và niềm tin vào bản thân. Thông điệp chính của sách là: mọi người đều có thể giỏi – nếu biết cách học và tin vào chính mình.\n" +
++        id = 7,
++        tensach = "Và Rồi Chẳng Còn Ai",
++        tacgia = "Agatha Christie",
++        namxb = "2021",
++        hinhanh = R.drawable.nxbtre_full_24582021_115846,
++        mota = "\"Và rồi chẳng còn ai\" là một trong những kiệt tác trinh thám nổi bật nhất của Agatha Christie, xoay quanh mười người xa lạ được mời tới một hòn đảo biệt lập. Tại đây, từng người trong số họ bị buộc tội đã gây ra cái chết cho người khác trong quá khứ mà chưa từng bị pháp luật trừng phạt. Trong khi còn chưa kịp tìm hiểu chuyện gì đang diễn ra, họ bắt đầu lần lượt chết một cách bí ẩn, đúng theo lời bài đồng dao “Mười chú lính chì” treo trên tường. Không có cách nào rời khỏi đảo, cũng không có sự giúp đỡ từ bên ngoài, nỗi hoảng loạn lan rộng khi kẻ giết người dường như đang ẩn mình giữa họ. Với nhịp truyện căng thẳng, kết thúc bất ngờ và cấu trúc phá cách không có thám tử chính, tác phẩm đã trở thành hình mẫu kinh điển của thể loại “trinh thám không lối thoát” và là một trong những cuốn sách trinh thám bán chạy nhất mọi thời đại.\n" +
+                 "\n"
+     ),
+     Book(
+@@ -71,7 +71,7 @@
+         tensach = "Thép đã tôi thế đấy",
+         tacgia = "Nikolai A. Ostrovsky",
+         namxb = "1932",
+-        hinhanh = R.drawable.th_p___t_i_th_y__,
++        hinhanh = R.drawable._020_07_28_10_42_44_1,
+         mota = "\"Thép đã tôi thế đấy\" là cuốn tiểu thuyết giàu lý tưởng, khắc họa chân dung người thanh niên Pavel Korchagin – hình mẫu của lớp thanh niên cách mạng Liên Xô kiên cường, quả cảm và bất khuất. Qua hành trình vượt qua gian khổ, bệnh tật và thử thách, tác phẩm truyền đi thông điệp mạnh mẽ về ý chí, nghị lực và sự rèn luyện bản thân như “thép đã tôi trong lửa đỏ và nước lạnh”."
+     ),
+     Book(
+@@ -79,16 +79,16 @@
+         tensach = "Những Tấm Lòng Cao Cả",
+         tacgia = "Edmondo De Amicis",
+         namxb = "1886",
+-        hinhanh = R.drawable.nhung_tam_long_cao_ca,
++        hinhanh = R.drawable.nhung_tam_long_cao_ca_sach_az,
+         mota = "\"Những tấm lòng cao cả\" là một cuốn tiểu thuyết cảm động viết dưới hình thức nhật ký của một cậu bé tên Enrico, ghi lại một năm học đầy ý nghĩa tại một trường tiểu học ở Ý. Qua từng trang viết giản dị, ấm áp, tác phẩm ca ngợi tình thầy trò, tình bạn, lòng hiếu thảo, lòng yêu nước và đức hy sinh — những phẩm chất nhân văn đẹp đẽ và sâu sắc của con người."
+     ),
+     Book(
+-        id = 4,
+-        tensach = "Một Thoáng Ta Rực Rỡ Ở Nhân Gian",
+-        tacgia = "Ocean Vương",
+-        namxb = "2019",
+-        hinhanh = R.drawable.mot_thoang_ta_ruc_ro_o_nhan_gian_bia,
+-        mota = "\"Một thoáng ta rực rỡ ở nhân gian\" là bức thư chưa từng được gửi của một chàng trai trẻ gốc Việt tên Little Dog gửi cho người mẹ mù chữ của mình. Thư kể về tuổi thơ dữ dội của cậu tại Mỹ, về chiến tranh, nhập cư, bạo lực, tình yêu đồng tính đầu đời và thân phận thiểu số. Với văn phong như thơ, đầy ám ảnh và chân thành, cuốn sách là hành trình đi tìm bản sắc, chữa lành vết thương và khẳng định sự tồn tại mong manh nhưng rực rỡ của con người."
++        id = 11,
++        tensach = "Suối nguồn",
++        tacgia = "Ayn Rand",
++        namxb = "1943",
++        hinhanh = R.drawable._021_06_08_15_55_10_1,
++        mota = "\"Suối Nguồn\" kể về hành trình đấu tranh không khoan nhượng của Howard Roark, một kiến trúc sư trẻ tài năng và độc lập, người kiên định theo đuổi lý tưởng sáng tạo cá nhân chống lại xã hội khuôn mẫu và thỏa hiệp. Roark từ chối tuân theo chuẩn mực thông thường, dù phải trả giá bằng sự nghiệp và danh tiếng, miễn là được sống đúng với bản ngã và tầm nhìn nghệ thuật của mình."
+     ),
+     Book(
+         id = 12,
+@@ -99,19 +99,19 @@
+         mota = "\"Đi tìm lẽ sống\" là một cuốn sách phi thường, trong đó bác sĩ tâm thần Viktor E. Frankl thuật lại trải nghiệm sống sót qua trại tập trung Đức Quốc xã và từ đó khám phá ra một chân lý sâu sắc: con người có thể chịu đựng bất kỳ điều gì – miễn là họ tìm thấy ý nghĩa trong nỗi đau đó. Cuốn sách là minh chứng rằng ngay cả giữa địa ngục trần gian, lẽ sống vẫn có thể được tìm thấy và chính điều đó cứu rỗi con người."
+     ),
+     Book(
+-        id = 1,
+-        tensach = "Sự Im Lặng Của Bầy Cừu",
+-        tacgia = "Thomas Harris",
+-        namxb = "1988",
+-        hinhanh = R.drawable.silence3,
+-        mota = "\"Sự im lặng của bầy cừu\" là một tiểu thuyết giật gân – tâm lý tội phạm xoay quanh cuộc truy đuổi tên sát nhân hàng loạt “Buffalo Bill” của đặc vụ FBI tập sự Clarice Starling. Để phá án, cô buộc phải tìm đến Tiến sĩ Hannibal Lecter – một bác sĩ tâm thần thiên tài nhưng cũng là kẻ ăn thịt người khét tiếng. Cuộc đối thoại giữa hai trí tuệ – một bên là kẻ sát nhân đầy mị lực, một bên là cô gái trẻ thông minh nhưng tổn thương – đã tạo nên một trò chơi tâm lý căng thẳng, đầy ám ảnh và lôi cuốn đến nghẹt thở."
++        id = 13,
++        tensach = "Nhật ký crush bạn cùng bàn",
++        tacgia = "Mia",
++        namxb = "2025",
++        mota = "\"Nhật Ký Crush Bạn Cùng Bàn\" là một câu chuyện nhẹ nhàng, hài hước và đầy cảm xúc về tuổi học trò – nơi những rung động đầu đời bắt đầu từ ánh mắt, nụ cười và những lần vô tình chạm nhau. Qua những trang nhật ký ngây ngô nhưng chân thành, nhân vật chính kể lại hành trình \"thầm thương trộm nhớ\" người bạn cùng bàn – từ những khoảnh khắc vụng về đến những cảm xúc trong trẻo, đáng yêu khó quên.",
++        hinhanh = R.drawable.nhatky
+     ),
+     Book(
+         id = 14,
+         tensach = "Nhà Tù Shawshank",
+         tacgia = "Stephen King",
+         namxb = "1994",
+-        hinhanh = R.drawable.shawshankredemptionmovieposter,
++        hinhanh = R.drawable._936066696111_1,
+         mota = "\"Nhà tù Shawshank\" là câu chuyện về hy vọng, tự do và nghị lực sống diễn ra trong khung cảnh u ám của một nhà tù biệt lập. Nhân vật chính, Andy Dufresne – một nhân viên ngân hàng bị kết án oan vì tội giết vợ – đã phải sống gần hai thập kỷ sau song sắt. Trong bóng tối của tuyệt vọng, anh vẫn kiên trì nuôi hy vọng, kết bạn với tù nhân Red, và lặng lẽ lên kế hoạch tự giải thoát bằng chính trí tuệ và lòng tin vững chắc."
+     ),
+     Book(
+@@ -119,7 +119,7 @@
+         tensach = "Mắt Biếc",
+         tacgia = "Nguyễn Nhật Ánh",
+         namxb = "1990",
+-        hinhanh = R.drawable.nxbtre_full_01372019_043734,
++        hinhanh = R.drawable._1273677,
+         mota = "\"Mắt biếc\" là một câu chuyện buồn, nhẹ nhàng và sâu lắng về tình yêu đơn phương, tuổi thơ ngây dại và những lỡ làng không thể nói thành lời. Qua nhân vật Ngạn, một cậu bé lớn lên với trái tim tràn đầy yêu thương dành cho cô bạn Hà Lan có đôi mắt biếc, tác phẩm là bản tình ca buồn về mối tình đẹp nhưng đầy nuối tiếc, như một làn gió trong trẻo lướt qua cuộc đời rồi tan vào hoài niệm."
+     ),
+     Book(
+@@ -127,7 +127,7 @@
+         tensach = "Dấu Chân Trên Cát",
+         tacgia = "Nguyễn Minh Tiến",
+         namxb = "2004",
+-        hinhanh = R.drawable.dau_chan_tren_cat_nguyen_phong,
++        hinhanh = R.drawable._5960122,
+         mota = "\"Dấu chân trên cát\" là một bài thơ ngắn nhưng sâu sắc, kể về một giấc mơ của người tín hữu – khi cùng Chúa bước đi trên bãi biển cuộc đời. Nhìn lại phía sau, họ thấy có những lúc có hai dấu chân (của mình và Chúa), nhưng trong những lúc đau khổ nhất, chỉ còn một dấu chân. Người đó trách Chúa vì đã bỏ rơi mình trong khổ đau, nhưng Chúa đáp:\n" +
+                 "\n" +
+                 "“Chính lúc con đau khổ nhất... là lúc Ta đã bế con trên tay.”"
+@@ -140,15 +140,6 @@
+         hinhanh = R.drawable.lang_le_sapa_e21d2937bedc4ff5b6f594e508893a6a_master,
+         mota = "\"Lặng lẽ Sa Pa\" là một truyện ngắn giàu chất trữ tình và nhân văn, kể về cuộc gặp gỡ tình cờ giữa một ông hoạ sĩ, một cô kĩ sư và một người thanh niên làm công tác khí tượng trên đỉnh núi Sa Pa. Qua cuộc trò chuyện giản dị, tác phẩm tôn vinh vẻ đẹp thầm lặng mà cao quý của những con người đang ngày đêm cống hiến cho đất nước trong âm thầm, giữa thiên nhiên hùng vĩ mà lặng lẽ."
+     ),
+-    Book(
+-        id = 7,
+-        tensach = "Và Rồi Chẳng Còn Ai",
+-        tacgia = "Agatha Christie",
+-        namxb = "2021",
+-        hinhanh = R.drawable.nxbtre_full_24582021_115846,
+-        mota = "\"Và rồi chẳng còn ai\" là một trong những kiệt tác trinh thám nổi bật nhất của Agatha Christie, xoay quanh mười người xa lạ được mời tới một hòn đảo biệt lập. Tại đây, từng người trong số họ bị buộc tội đã gây ra cái chết cho người khác trong quá khứ mà chưa từng bị pháp luật trừng phạt. Trong khi còn chưa kịp tìm hiểu chuyện gì đang diễn ra, họ bắt đầu lần lượt chết một cách bí ẩn, đúng theo lời bài đồng dao “Mười chú lính chì” treo trên tường. Không có cách nào rời khỏi đảo, cũng không có sự giúp đỡ từ bên ngoài, nỗi hoảng loạn lan rộng khi kẻ giết người dường như đang ẩn mình giữa họ. Với nhịp truyện căng thẳng, kết thúc bất ngờ và cấu trúc phá cách không có thám tử chính, tác phẩm đã trở thành hình mẫu kinh điển của thể loại “trinh thám không lối thoát” và là một trong những cuốn sách trinh thám bán chạy nhất mọi thời đại.\n" +
+-                "\n"
+-    ),
+     Book(
+         id = 18,
+         tensach = "Harry Potter Và Hòn Đá Phù Thủy",
+@@ -157,6 +148,15 @@
+         hinhanh = R.drawable.hr1,
+         mota = "\"Harry Potter và Hòn đá Phù thủy\" là cuốn tiểu thuyết mở đầu cho hành trình kỳ diệu của cậu bé Harry Potter – một đứa trẻ mồ côi sống khổ sở trong gia đình Dursley – cho đến khi phát hiện ra mình là một phù thủy. Ở tuổi 11, Harry được mời theo học tại Trường Phù thủy và Pháp sư Hogwarts, nơi cậu dần khám phá thế giới phép thuật cùng những người bạn mới như Ron Weasley và Hermione Granger. Trong khi học cách sử dụng phép thuật và hòa nhập vào môi trường mới, Harry vô tình bị cuốn vào một bí ẩn liên quan đến Hòn đá Phù thủy – một vật có thể mang lại sự bất tử. Câu chuyện dần hé lộ về quá khứ của Harry, sự thật về cái chết của cha mẹ cậu, và bóng dáng của kẻ thù nguy hiểm Chúa tể Voldemort. Cuốn sách mang màu sắc kỳ ảo, kịch tính và ấm áp, là bước khởi đầu cho một trong những loạt truyện thiếu nhi nổi tiếng và có ảnh hưởng sâu rộng nhất trên toàn thế giới."
+     ),
++    Book(
++        id = 19,
++        tensach = "Tôi tài giỏi, bạn cũng thế!",
++        tacgia = "Adam Khoo",
++        namxb = "2019",
++        hinhanh = R.drawable.toi_tai_gioi,
++        mota = "\"Tôi tài giỏi, bạn cũng thế!\" là cuốn sách truyền cảm hứng mạnh mẽ cho học sinh, sinh viên và những người đang tìm lại niềm tin vào bản thân. Adam Khoo – một học sinh từng bị xem là “bất tài” – đã kể lại hành trình vươn lên của chính mình nhờ tư duy tích cực, phương pháp học thông minh và niềm tin vào bản thân. Thông điệp chính của sách là: mọi người đều có thể giỏi – nếu biết cách học và tin vào chính mình.\n" +
++                "\n"
++    ),
+ //    Book(
+ //        id = 20,
+ //        tensach = "Và Rồi Chẳng Còn Ai",
