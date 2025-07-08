@@ -37,5 +37,8 @@ fun AppNavHost(
             val bookId = backStackEntry.arguments?.getInt("bookId")
             BookDetails(navController, bookId = bookId, viewModel = bookViewModel)
         }
+        composable(NavigationItem.EXPLORE.route) {
+            ExploreScreen(navController, viewModel = bookViewModel)
+        }
     }
 }

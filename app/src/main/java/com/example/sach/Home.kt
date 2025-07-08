@@ -18,19 +18,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
+
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -38,8 +30,6 @@ fun HomeScreen(
     navController: NavHostController,
     viewModel: BookViewModel = viewModel()
 ) {
-    //navController: NavHostController,
-//    val navController = rememberNavController()
     var searchQuery by remember { mutableStateOf("") }
 
     val filteredBooks = viewModel.books.filter {
@@ -54,23 +44,23 @@ fun HomeScreen(
     ) {
         Row(
 
-        ) {
+        ){
             LogoIcon()
-            Text(
-                text = "Trang chủ",
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.fillMaxWidth()
-            )
+        Text(
+            text = "Trang chủ",
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.fillMaxWidth()
+        )
         }
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
-            value = searchQuery,
-            onValueChange = { searchQuery = it },
-            label = { Text("Tìm kiếm sách...") },
-            modifier = Modifier.fillMaxWidth()
-        )
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                label = { Text("Tìm kiếm sách...") },
+                modifier = Modifier.fillMaxWidth()
+            )
 
 
 
@@ -87,10 +77,7 @@ fun HomeScreen(
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(0.45f)
-                        .clickable {
-                            navController.navigate(NavigationItem.DETAIL.createRoute(book.id))
-                        },
+                        .aspectRatio(0.5f),
                     elevation = CardDefaults.cardElevation(4.dp)
                 ) {
                     Column(
@@ -100,31 +87,25 @@ fun HomeScreen(
                             painter = painterResource(id = book.hinhanh),
                             contentDescription = null,
                             modifier = Modifier
-                                .height(225.dp)
+                                .height(150.dp)
                                 .fillMaxWidth()
-                                .clip(RoundedCornerShape(25.dp))
                         )
 
                         Spacer(modifier = Modifier.height(8.dp))
 
 
-                        Text(
-                            text = book.tensach,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp
-                            )
+                        Text(book.tensach, style = MaterialTheme.typography.titleMedium)
                         Text(book.tacgia, style = MaterialTheme.typography.bodySmall)
                         Text("Năm XB: ${book.namxb}", style = MaterialTheme.typography.bodySmall)
 
                         Spacer(modifier = Modifier.weight(1f))
 
 
-                        IconButton(
-                            onClick = {
-                                viewModel.toggleFavorite(book.id)
-                            },
+                        IconButton(onClick = {
+                            viewModel.toggleFavorite(book.id)
+                        },
                             modifier = Modifier.align(Alignment.End)
-                        ) {
+                            ) {
                             Icon(
                                 imageVector = if (book.favorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                                 contentDescription = "Thêm vào mục yêu thích"
@@ -136,45 +117,18 @@ fun HomeScreen(
         }
 
         Spacer(modifier = Modifier.height(8.dp))
-        Row(
-            modifier = Modifier.padding(start = 120.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            IconButton(
-                onClick = {
-                    navController.navigate(NavigationItem.GET_START.route)
-                }
 
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Home,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
-            IconButton(
-                onClick = {
-                    navController.navigate(NavigationItem.SAVED.route)
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Favorite,
-                    contentDescription = "Go to favorites",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
-            IconButton(
-                onClick = {
-                    navController.navigate(NavigationItem.SAVED.route)
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Go to favorites",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
+        IconButton(
+            onClick = {
+                navController.navigate(NavigationItem.SAVED.route)
+            },
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Favorite,
+                contentDescription = "Go to favorites",
+                tint = MaterialTheme.colorScheme.primary
+            )
         }
     }
 }
@@ -196,10 +150,3 @@ fun LogoIcon(
         contentDescription = null
     )
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun PreviewHomeScreen(){
-//    val bookViewModel: BookViewModel = viewModel()
-//    HomeScreen()
-//}
