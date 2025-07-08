@@ -9,6 +9,7 @@ fun DSsach(): List<Book> = listOf(
         hinhanh = R.drawable.suimlang,
         mota = "\"Sự im lặng của bầy cừu\" là một tiểu thuyết giật gân – tâm lý tội phạm xoay quanh cuộc truy đuổi tên sát nhân hàng loạt “Buffalo Bill” của đặc vụ FBI tập sự Clarice Starling. Để phá án, cô buộc phải tìm đến Tiến sĩ Hannibal Lecter – một bác sĩ tâm thần thiên tài nhưng cũng là kẻ ăn thịt người khét tiếng. Cuộc đối thoại giữa hai trí tuệ – một bên là kẻ sát nhân đầy mị lực, một bên là cô gái trẻ thông minh nhưng tổn thương – đã tạo nên một trò chơi tâm lý căng thẳng, đầy ám ảnh và lôi cuốn đến nghẹt thở."
     ),
+
     Book(
         id = 2,
         tensach = "Đồi gió hú",
