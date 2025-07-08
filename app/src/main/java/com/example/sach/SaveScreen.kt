@@ -118,8 +118,6 @@ fun SavedScreen(navController: NavController,
                                     .fillMaxWidth()
                             )
 
-                            Spacer(modifier = Modifier.height(8.dp))
-
 
                             Text(book.tensach, style = MaterialTheme.typography.titleMedium)
                             Text(book.tacgia, style = MaterialTheme.typography.bodySmall)
