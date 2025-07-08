@@ -3,7 +3,9 @@ package com.example.sach
 enum class Sceen{
     GET_START,
     HOME,
-    SAVED
+    SAVED,
+    DETAIL,
+    EXPLORE
 }
 
 sealed class NavigationItem(val route: String){
@@ -13,4 +15,6 @@ sealed class NavigationItem(val route: String){
     object DETAIL : NavigationItem("detail/{bookId}") {
         fun createRoute(bookId: Int) = "detail/$bookId"
     }
+    object EXPLORE: NavigationItem(Sceen.EXPLORE.name)
 }
+
