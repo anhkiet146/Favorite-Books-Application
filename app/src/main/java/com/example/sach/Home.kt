@@ -29,6 +29,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 
 
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -52,10 +54,11 @@ fun HomeScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        "Read Ease",
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
+                    Image(
+                        painter = painterResource(id = R.drawable.ten_logo),
+                        contentDescription = null,
+                        modifier = Modifier.size(120.dp),
+                        contentScale = ContentScale.Fit
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(

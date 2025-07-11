@@ -1,6 +1,7 @@
 package com.example.sach
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -26,10 +27,11 @@ fun GetStartScreen(navController: NavHostController) {
     //navController: NavHostController
     //val navController = rememberNavController()
     Box(
-        modifier = Modifier.fillMaxSize()
+        Modifier
+            .fillMaxWidth()
     ) {
         Image(
-            painter = painterResource(id = R.drawable.nen),
+            painter = painterResource(id = R.drawable.background),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
@@ -39,11 +41,13 @@ fun GetStartScreen(navController: NavHostController) {
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
+            .background(Color.Black.copy(alpha = 0.3f))
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(24.dp),
+                .padding(24.dp)
+                .padding(top = 80.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -53,32 +57,7 @@ fun GetStartScreen(navController: NavHostController) {
                 contentDescription = "logo Thư viện",
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Text(
-                buildAnnotatedString {
-                    withStyle(
-                        style = SpanStyle(
-                            fontSize = 35.sp,
-                            color = Color.Gray,
-
-                            )
-                    ) {
-                        append("THƯ VIỆN \n\n\n")
-                    }
-                    withStyle(
-                        style = SpanStyle(
-                            fontSize = 50.sp,
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold
-                        )
-                    ) {
-                        append("       SÁCH")
-                    }
-                }
-            )
-
-            Spacer(modifier = Modifier.height(90.dp))
+            Spacer(modifier = Modifier.height(220.dp))
 
             Button(onClick = {
                 navController.navigate(NavigationItem.GET_START.route)
