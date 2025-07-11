@@ -9,7 +9,6 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -18,10 +17,24 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.ScrollableState
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import java.nio.file.WatchEvent
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -30,123 +43,182 @@ fun HomeScreen(
     navController: NavHostController,
     viewModel: BookViewModel = viewModel()
 ) {
-    var searchQuery by remember { mutableStateOf("") }
-
-    val filteredBooks = viewModel.books.filter {
-        it.tensach.contains(searchQuery, ignoreCase = true) ||
-                it.tacgia.contains(searchQuery, ignoreCase = true)
-    }
-
-    Column(
+    //navController: NavHostController,
+    //val navController = rememberNavController()
+    val layoutDirection = LocalLayoutDirection.current
+    val scrollState = rememberScrollState()
+    Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Row(
-
-        ){
-            LogoIcon()
-        Text(
-            text = "Trang chủ",
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.fillMaxWidth()
-        )
+            .statusBarsPadding()
+            .padding(
+                start = WindowInsets.safeDrawing.asPaddingValues()
+                    .calculateStartPadding(layoutDirection),
+                end = WindowInsets.safeDrawing.asPaddingValues()
+                    .calculateEndPadding(layoutDirection),
+            ),
+        bottomBar = {
+            BottomNavigationBar(navController = navController)
         }
-        Spacer(modifier = Modifier.height(8.dp))
+    ) {innerPadding ->
 
-        OutlinedTextField(
-                value = searchQuery,
-                onValueChange = { searchQuery = it },
-                label = { Text("Tìm kiếm sách...") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier = Modifier.weight(1f),
-            contentPadding = PaddingValues(8.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .verticalScroll(scrollState)
+                .padding(16.dp)
         ) {
-            items(filteredBooks) { book ->
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(0.5f),
-                    elevation = CardDefaults.cardElevation(4.dp)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(8.dp),
-                    ) {
-                        Image(
-                            painter = painterResource(id = book.hinhanh),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .height(150.dp)
-                                .fillMaxWidth()
-                        )
+            Row(
+                modifier = Modifier.padding(top = 10.dp)
+            ) {
+                Text(
+                    text = "Read Ease",
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
 
-                        Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
+            // --- Recommended Section ---
+            Text("Recommended for you", style = MaterialTheme.typography.titleMedium)
+            Text("Handpicked based on your reading preferences.", style = MaterialTheme.typography.bodySmall)
 
-                        Text(book.tensach, style = MaterialTheme.typography.titleMedium)
-                        Text(book.tacgia, style = MaterialTheme.typography.bodySmall)
-                        Text("Năm XB: ${book.namxb}", style = MaterialTheme.typography.bodySmall)
+            Spacer(modifier = Modifier.height(8.dp))
 
-                        Spacer(modifier = Modifier.weight(1f))
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                items(viewModel.books.take(5)) { book ->
+                    BookCard(book = book, viewModel = viewModel)
+                }
+            }
 
+            Spacer(modifier = Modifier.height(16.dp))
 
-                        IconButton(onClick = {
-                            viewModel.toggleFavorite(book.id)
-                        },
-                            modifier = Modifier.align(Alignment.End)
-                            ) {
-                            Icon(
-                                imageVector = if (book.favorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                                contentDescription = "Thêm vào mục yêu thích"
-                            )
-                        }
-                    }
+            Text("New Releases", style = MaterialTheme.typography.titleMedium)
+            Text("Newly released books spanning various genres.", style = MaterialTheme.typography.bodySmall)
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                items(viewModel.books.drop(5).take(5)) { book ->
+                    BookCard(book = book, viewModel = viewModel)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text("Trending Now", style = MaterialTheme.typography.titleMedium)
+            Text("Books that are popular this week.", style = MaterialTheme.typography.bodySmall)
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                items(viewModel.books.drop(10).take(5)) { book ->
+                    BookCard(book = book, viewModel = viewModel)
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text("You May Also Like", style = MaterialTheme.typography.titleMedium)
+            Text("Similar to what you've been reading.", style = MaterialTheme.typography.bodySmall)
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                items(viewModel.books.drop(15).take(4)) { book ->
+                    BookCard(book = book, viewModel = viewModel)
                 }
             }
         }
+    }
+}
 
-        Spacer(modifier = Modifier.height(8.dp))
 
-        IconButton(
-            onClick = {
-                navController.navigate(NavigationItem.SAVED.route)
-            },
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Favorite,
-                contentDescription = "Go to favorites",
-                tint = MaterialTheme.colorScheme.primary
+@Composable
+fun BookCard(book: Book, viewModel: BookViewModel) {
+    Card(
+        modifier = Modifier
+            .width(160.dp)
+            .height(260.dp),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Column(modifier = Modifier.padding(8.dp)) {
+            Image(
+                painter = painterResource(id = book.hinhanh),
+                contentDescription = null,
+                modifier = Modifier
+                    .height(150.dp)
+                    .fillMaxWidth(),
+                contentScale = ContentScale.Crop
             )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(book.tensach, style = MaterialTheme.typography.titleSmall)
+            Text(book.tacgia, style = MaterialTheme.typography.bodySmall, maxLines = 1)
+            Spacer(modifier = Modifier.height(4.dp))
+            IconButton(
+                onClick = { viewModel.toggleFavorite(book.id) },
+                modifier = Modifier.align(Alignment.End)
+            ) {
+                Icon(
+                    imageVector = if (book.favorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    contentDescription = "Toggle Favorite"
+                )
+            }
         }
     }
 }
 
 @Composable
-fun LogoIcon(
-    modifier: Modifier = Modifier
-) {
-    Image(
-        modifier = modifier
-            .size(64.dp)
-            .clip(MaterialTheme.shapes.small)
-            .border(1.dp, Color.Gray, MaterialTheme.shapes.small)
-            .padding(15.dp)
-            .clip(MaterialTheme.shapes.small),
-        contentScale = ContentScale.Crop,
-        painter = painterResource(R.drawable.logo),
-
-        contentDescription = null
-    )
+fun BottomNavItem(label: String, icon: ImageVector, onClick: () -> Unit) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(80.dp)) {
+        IconButton(onClick = onClick, modifier = Modifier.size(48.dp)) {
+            Icon(icon, contentDescription = label, tint = MaterialTheme.colorScheme.primary)
+        }
+        Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
+    }
 }
+
+@Composable
+fun BottomNavigationBar(navController: NavHostController) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        BottomNavItemWithImage("Home", R.drawable.home_alt_2) {
+            navController.navigate(NavigationItem.GET_START.route)
+        }
+        BottomNavItemWithImage("Search", R.drawable.search) {
+            navController.navigate(NavigationItem.EXPLORE.route)
+        }
+        BottomNavItemWithImage("Favorites", R.drawable.bookmark_plus_alt) {
+            navController.navigate(NavigationItem.SAVED.route)
+        }
+    }
+}
+
+@Composable
+fun BottomNavItemWithImage(label: String, @DrawableRes iconRes: Int, onClick: () -> Unit) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(80.dp)) {
+        IconButton(onClick = onClick, modifier = Modifier.size(48.dp)) {
+            Image(
+                painter = painterResource(id = iconRes),
+                contentDescription = label,
+                modifier = Modifier.size(24.dp)
+            )
+        }
+        Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
+    }
+}
+
+
+//@Preview
+//@Composable
+//fun PreviewHomeScreen() {
+//    HomeScreen()
+//}
