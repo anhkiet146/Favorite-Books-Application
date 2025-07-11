@@ -3,7 +3,6 @@ package com.example.sach
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -16,22 +15,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.compose.rememberNavController
-import java.nio.file.WatchEvent
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -60,7 +48,7 @@ fun HomeScreen(
         bottomBar = {
             BottomNavigationBar(navController = navController)
         }
-    ) {innerPadding ->
+    ) { innerPadding ->
 
         Column(
             modifier = Modifier
@@ -85,7 +73,10 @@ fun HomeScreen(
 
             // --- Recommended Section ---
             Text("Recommended for you", style = MaterialTheme.typography.titleMedium)
-            Text("Handpicked based on your reading preferences.", style = MaterialTheme.typography.bodySmall)
+            Text(
+                "Handpicked based on your reading preferences.",
+                style = MaterialTheme.typography.bodySmall
+            )
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -98,7 +89,10 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text("New Releases", style = MaterialTheme.typography.titleMedium)
-            Text("Newly released books spanning various genres.", style = MaterialTheme.typography.bodySmall)
+            Text(
+                "Newly released books spanning various genres.",
+                style = MaterialTheme.typography.bodySmall
+            )
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -172,16 +166,6 @@ fun BookCard(book: Book, viewModel: BookViewModel) {
 }
 
 @Composable
-fun BottomNavItem(label: String, icon: ImageVector, onClick: () -> Unit) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(80.dp)) {
-        IconButton(onClick = onClick, modifier = Modifier.size(48.dp)) {
-            Icon(icon, contentDescription = label, tint = MaterialTheme.colorScheme.primary)
-        }
-        Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
-    }
-}
-
-@Composable
 fun BottomNavigationBar(navController: NavHostController) {
     Row(
         modifier = Modifier
@@ -212,7 +196,11 @@ fun BottomNavItemWithImage(label: String, @DrawableRes iconRes: Int, onClick: ()
                 modifier = Modifier.size(24.dp)
             )
         }
-        Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
+        Text(
+            label,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.primary
+        )
     }
 }
 
