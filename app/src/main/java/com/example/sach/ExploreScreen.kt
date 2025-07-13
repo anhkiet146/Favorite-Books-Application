@@ -32,7 +32,7 @@ fun ExploreScreen(
     val focusManager = LocalFocusManager.current
     val allBooks = DSsach()
 
-    // ✅ Hàm bỏ dấu tiếng Việt
+    // Hàm bỏ dấu tiếng Việt
     fun String.normalize(): String {
         return this.lowercase()
             .replace(Regex("[àáạảãâầấậẩẫăằắặẳẵ]"), "a")
@@ -44,7 +44,7 @@ fun ExploreScreen(
             .replace(Regex("đ"), "d")
     }
 
-    // ✅ Hàm tìm kiếm khi bấm nút hoặc Enter
+    // Hàm tìm kiếm khi bấm nút hoặc Enter
     fun timKiemSach() {
         val key = keyword.normalize()
         ketQua = if (key.isBlank()) emptyList()
@@ -55,7 +55,7 @@ fun ExploreScreen(
         focusManager.clearFocus()
     }
 
-    // ✅ Gợi ý realtime khi đang gõ
+    // Gợi ý realtime khi đang gõ
     val suggestions = remember(keyword) {
         if (keyword.isBlank()) emptyList()
         else {
@@ -83,7 +83,7 @@ fun ExploreScreen(
             )
         )
 
-        // 🔎 Gợi ý bên dưới ô nhập
+        // Gợi ý bên dưới ô nhập
         if (suggestions.isNotEmpty()) {
             LazyColumn(
                 modifier = Modifier
@@ -123,14 +123,17 @@ fun ExploreScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // ✅ Kết quả chính thức sau khi tìm
+        // Kết quả chính thức sau khi tìm
         if (ketQua.isNotEmpty()) {
             LazyColumn {
                 items(ketQua) { sach ->
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 4.dp),
+                            .padding(vertical = 4.dp)
+                            .clickable {
+                                navController.navigate(NavigationItem.DETAIL.createRoute(sach.id))
+                            },
                         elevation = CardDefaults.cardElevation(4.dp)
                     ) {
                         Row(modifier = Modifier.padding(8.dp)) {
