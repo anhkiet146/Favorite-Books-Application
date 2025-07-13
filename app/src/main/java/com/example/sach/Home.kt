@@ -2,6 +2,7 @@ package com.example.sach
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -96,7 +97,7 @@ fun HomeScreen(
 
             LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 items(viewModel.books.take(5)) { book ->
-                    BookCard(book = book, viewModel = viewModel)
+                    BookCard(book = book, viewModel = viewModel, navController)
                 }
             }
 
@@ -116,7 +117,7 @@ fun HomeScreen(
 
             LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 items(viewModel.books.drop(5).take(5)) { book ->
-                    BookCard(book = book, viewModel = viewModel)
+                    BookCard(book = book, viewModel = viewModel, navController)
                 }
             }
 
@@ -133,7 +134,7 @@ fun HomeScreen(
 
             LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 items(viewModel.books.drop(10).take(5)) { book ->
-                    BookCard(book = book, viewModel = viewModel)
+                    BookCard(book = book, viewModel = viewModel, navController)
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -149,7 +150,7 @@ fun HomeScreen(
 
             LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 items(viewModel.books.drop(15).take(4)) { book ->
-                    BookCard(book = book, viewModel = viewModel)
+                    BookCard(book = book, viewModel = viewModel, navController)
                 }
             }
         }
@@ -158,11 +159,14 @@ fun HomeScreen(
 
 
 @Composable
-fun BookCard(book: Book, viewModel: BookViewModel) {
+fun BookCard(book: Book, viewModel: BookViewModel, navController: NavHostController) {
     Card(
         modifier = Modifier
             .width(160.dp)
-            .height(280.dp),
+            .height(280.dp)
+            .clickable {
+                navController.navigate(NavigationItem.DETAIL.createRoute(book.id))
+            },
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
