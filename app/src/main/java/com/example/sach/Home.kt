@@ -11,7 +11,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -23,7 +22,6 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
@@ -80,9 +78,6 @@ fun HomeScreen(
                 .verticalScroll(scrollState)
                 .padding(16.dp)
         ) {
-
-            Spacer(modifier = Modifier.height(16.dp))
-
             // --- Recommended Section ---
             Text(
                 text = "Recommended for you",
