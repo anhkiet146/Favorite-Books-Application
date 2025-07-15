@@ -28,8 +28,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 
 
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -53,12 +51,19 @@ fun HomeScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Image(
-                        painter = painterResource(id = R.drawable.ten_logo),
-                        contentDescription = null,
-                        modifier = Modifier.size(120.dp),
-                        contentScale = ContentScale.Fit
-                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ten_logo),
+                            contentDescription = null,
+                            modifier = Modifier.size(120.dp),
+                            contentScale = ContentScale.Fit
+                        )
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
@@ -82,7 +87,8 @@ fun HomeScreen(
             Text(
                 text = "Recommended for you",
                 fontSize = 20.sp,
-                fontWeight = FontWeight.Bold)
+                fontWeight = FontWeight.Bold
+            )
             Text(
                 "Handpicked based on your reading preferences.",
                 style = MaterialTheme.typography.bodySmall
@@ -138,7 +144,7 @@ fun HomeScreen(
                 text = "You May Also Like",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
-                )
+            )
             Text("Similar to what you've been reading.", style = MaterialTheme.typography.bodySmall)
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -165,9 +171,10 @@ fun BookCard(book: Book, viewModel: BookViewModel, navController: NavHostControl
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            Column(modifier = Modifier
-                .padding(8.dp)
-                .fillMaxSize()
+            Column(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxSize()
             ) {
                 Image(
                     painter = painterResource(id = book.hinhanh),
@@ -249,5 +256,6 @@ fun BottomNavItemWithImage(label: String, @DrawableRes iconRes: Int, onClick: ()
 //@Preview
 //@Composable
 //fun PreviewHomeScreen() {
+//    val bookViewModel: BookViewModel = viewModel()
 //    HomeScreen()
 //}
