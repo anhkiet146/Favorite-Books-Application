@@ -1,4 +1,7 @@
-package com.example.sach
+package com.example.sach.data
+
+import com.example.sach.R
+import com.example.sach.model.Book
 
 fun DSsach(): List<Book> = listOf(
     Book(

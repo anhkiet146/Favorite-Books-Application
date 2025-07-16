@@ -17,37 +17,47 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.draw.alpha
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.*
+import com.example.sach.navigation.NavigationItem
+import androidx.compose.material3.MaterialTheme
+
 
 
 @Composable
-fun GetStartScreen(navController: NavHostController) {
-    //navController: NavHostController
-    //val navController = rememberNavController()
-    val infiniteTransition = rememberInfiniteTransition()
-    val alpha by infiniteTransition.animateFloat(
-        initialValue = 0.3f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 700, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        )
+fun GetStartScreen(
+    navController: NavHostController,
+    onSplashFinished: () -> Unit
+) {
+    var startAnimation by remember { mutableStateOf(false) }
+    val alpha by animateFloatAsState(
+        targetValue = if (startAnimation) 1f else 0f,
+        animationSpec = tween(durationMillis = 800, easing = FastOutSlowInEasing),
+        label = "splash_alpha"
     )
+
     LaunchedEffect(Unit) {
-        delay(2000)
-        navController.navigate(NavigationItem.GET_START.route)
+        startAnimation = true
+        delay(1000)
+        onSplashFinished() // Gọi để đánh dấu splash đã chạy
+        navController.navigate(NavigationItem.HOME.route) {
+            popUpTo(NavigationItem.SPLASH.route) {
+                inclusive = true
+            }
+        }
     }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White),
+            .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = painterResource(id = R.drawable.logo),
-            contentDescription = "logo Thư viện",
+            painter = painterResource(id = R.drawable.logo_removebg_preview),
+            contentDescription = "Logo thư viện",
             modifier = Modifier
                 .size(120.dp)
                 .alpha(alpha)
         )
     }
+
 }

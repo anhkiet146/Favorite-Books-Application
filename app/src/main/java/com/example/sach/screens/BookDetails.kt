@@ -1,4 +1,4 @@
-package com.example.sach
+package com.example.sach.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -7,7 +7,6 @@ import androidx.compose.material3.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
@@ -21,24 +20,27 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.example.sach.model.Book
+import com.example.sach.ui.BookViewModel
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.foundation.shape.RoundedCornerShape
+
 
 @Composable
 fun BookDetails(
@@ -47,6 +49,10 @@ fun BookDetails(
     viewModel: BookViewModel
 ) {
     val layoutDirection = LocalLayoutDirection.current
+    val book = viewModel.getBookById(bookId ?: -1)
+    val favoriteIds by viewModel.favoriteBookIds.collectAsState()
+    val isFavorite = favoriteIds.contains(book?.id.toString())
+
     Surface(
         modifier = Modifier
             .fillMaxSize()
@@ -58,38 +64,33 @@ fun BookDetails(
                     .calculateEndPadding(layoutDirection),
             ),
     ) {
-        val book = viewModel.getBookById(bookId ?: -1)
-
         Column(modifier = Modifier.fillMaxSize()) {
             TopAppBar(
-                onBackClick = {
-                    navController.popBackStack() // QUAY VỀ TRANG TRƯỚC (HomeScreen)
-                },
-                onNotificationClick = { /* làm gì đó */ }
+                onBackClick = { navController.popBackStack() }
             )
-
             if (book != null) {
-                DetailContent(book)
+                DetailContent(
+                    book = book,
+                    isFavorite = isFavorite,
+                    onFavoriteClick = { viewModel.toggleFavorite(book.id) }
+                )
             } else {
                 Text("Không tìm thấy sách", modifier = Modifier.padding(16.dp))
             }
         }
     }
-
 }
-
 
 @Composable
 fun TopAppBar(
     onBackClick: () -> Unit,
-    onNotificationClick: () -> Unit
 ) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp)
-            .shadow(elevation = 4.dp, ambientColor = Color.Black, spotColor = Color.Black),
-        color = Color.White
+            .shadow(elevation = 2.dp, ambientColor = Color.Black, spotColor = Color.Black),
+        color = MaterialTheme.colorScheme.surface
     ) {
         Row(
             modifier = Modifier
@@ -97,21 +98,14 @@ fun TopAppBar(
                 .height(56.dp)
                 .padding(horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.Start
         ) {
             IconButton(onClick = onBackClick, modifier = Modifier.size(48.dp)) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Back",
-                    modifier = Modifier.size(32.dp)
-                )
-            }
-
-            IconButton(onClick = onNotificationClick, modifier = Modifier.size(48.dp)) {
-                Icon(
-                    imageVector = Icons.Default.Notifications,
-                    contentDescription = "Nofi",
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier.size(32.dp),
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
             }
         }
@@ -119,7 +113,11 @@ fun TopAppBar(
 }
 
 @Composable
-fun DetailContent(book: Book) {
+fun DetailContent(
+    book: Book,
+    isFavorite: Boolean,
+    onFavoriteClick: () -> Unit
+) {
     val scrollState = rememberScrollState()
 
     Column(
@@ -140,7 +138,7 @@ fun DetailContent(book: Book) {
                     .height(400.dp)
                     .width(300.dp)
                     .padding(top = 40.dp)
-                    .clip(androidx.compose.foundation.shape.RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(8.dp))
             )
 
             Text(
@@ -149,44 +147,71 @@ fun DetailContent(book: Book) {
                 fontSize = 28.sp,
                 modifier = Modifier.padding(top = 30.dp),
                 textAlign = TextAlign.Center,
-                lineHeight = 36.sp
+                lineHeight = 36.sp,
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
 
         Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = "Tác giả: ${book.tacgia}",
-            fontSize = 16.sp,
-            modifier = Modifier.padding(start = 16.dp)
-        )
+
+        // Row chứa tác giả và icon yêu thích
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Tác giả: ${book.tacgia}",
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            IconButton(onClick = onFavoriteClick) {
+                Icon(
+                    imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    contentDescription = "Toggle Favorite",
+                    tint = if (isFavorite)
+                        MaterialTheme.colorScheme.primary
+                    else
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+
         Text(
             text = "Năm xuất bản: ${book.namxb}",
             fontSize = 16.sp,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(start = 16.dp)
         )
+
         Divider(
             modifier = Modifier
                 .fillMaxWidth(0.8f)
                 .padding(vertical = 16.dp)
                 .align(Alignment.CenterHorizontally),
             thickness = 1.dp,
-            color = Color.Gray.copy(alpha = 0.3f)
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
         )
+
         Text(
             text = "Mô tả",
             fontSize = 18.sp,
             fontWeight = FontWeight.SemiBold,
-            modifier = Modifier
-                .padding(start = 16.dp)
+            modifier = Modifier.padding(start = 16.dp),
+            color = MaterialTheme.colorScheme.onBackground
         )
         Text(
             text = book.mota,
             fontSize = 14.sp,
             modifier = Modifier.padding(16.dp),
-            textAlign = TextAlign.Justify
+            textAlign = TextAlign.Justify,
+            color = MaterialTheme.colorScheme.onBackground
         )
     }
 }
+
 
 
 

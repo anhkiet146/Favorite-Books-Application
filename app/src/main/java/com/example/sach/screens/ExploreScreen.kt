@@ -1,10 +1,11 @@
-package com.example.sach
+package com.example.sach.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -21,17 +22,24 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.sach.model.Book
+import com.example.sach.data.DSsach
+import com.example.sach.navigation.NavigationItem
+import com.example.sach.ui.BookViewModel
+import androidx.compose.runtime.saveable.rememberSaveable
+
 
 @Composable
 fun ExploreScreen(
     navController: NavHostController,
     viewModel: BookViewModel = viewModel()
 ) {
-    var keyword by remember { mutableStateOf("") }
-    var ketQua by remember { mutableStateOf<List<Book>>(emptyList()) }
+    var keyword by rememberSaveable  { mutableStateOf("") }
+    var ketQua by rememberSaveable  { mutableStateOf<List<Book>>(emptyList()) }
 
     val focusManager = LocalFocusManager.current
     val allBooks = DSsach()
+    var isSearchPerformed by remember { mutableStateOf(false) }
 
     // Hàm bỏ dấu tiếng Việt
     fun String.normalize(): String {
@@ -47,56 +55,82 @@ fun ExploreScreen(
 
     // Hàm tìm kiếm khi bấm nút hoặc Enter
     fun timKiemSach() {
-        val key = keyword.normalize()
-        ketQua = if (key.isBlank()) emptyList()
-        else allBooks.filter {
-            it.tensach.normalize().contains(key) ||
-                    it.tacgia.normalize().contains(key)
+        val keywords = keyword.normalize().split("\\s+".toRegex())
+        ketQua = if (keywords.isEmpty()) emptyList()
+        else allBooks.filter { book ->
+            val title = book.tensach.normalize()
+            val author = book.tacgia.normalize()
+            keywords.all { word ->
+                title.contains(word) || author.contains(word)
+            }
         }
+        isSearchPerformed = true
         focusManager.clearFocus()
     }
 
     // Gợi ý realtime khi đang gõ
     val suggestions = remember(keyword) {
-        if (keyword.isBlank()) emptyList()
-        else {
-            val key = keyword.normalize()
-            allBooks.filter {
-                it.tensach.normalize().contains(key) ||
-                        it.tacgia.normalize().contains(key)
-            }.take(5)
-        }
+        val normalized = keyword.normalize()
+        if (normalized.length < 2) return@remember emptyList() // Không gợi ý nếu quá ngắn
+
+        val keywords = normalized.split("\\s+".toRegex())
+        allBooks.filter { book ->
+            val title = book.tensach.normalize()
+            val author = book.tacgia.normalize()
+            keywords.all { word ->
+                title.contains(word) || author.contains(word)
+            }
+        }.take(5)
     }
 
     Column(modifier = Modifier
         .fillMaxSize()
-        .padding(16.dp)
     ) {
-        IconButton(
-            onClick = { navController.popBackStack() },
-            modifier = Modifier.align(Alignment.Start)
-        ) {
-            Icon(
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = "Back",
-                tint = Color.Black
-            )
+        TopAppBar(
+            onBackClick = { navController.popBackStack() }
+        )
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                OutlinedTextField(
+                    value = keyword,
+                    onValueChange = {
+                        keyword = it
+                        isSearchPerformed = false // reset cờ khi người dùng gõ lại
+                    },
+                    placeholder = { Text("Nhập tên sách hoặc tác giả") },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(56.dp),
+                    shape = RoundedCornerShape(topStart = 25.dp, bottomStart = 25.dp),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+                    keyboardActions = KeyboardActions(onSearch = { timKiemSach() })
+                )
+
+
+                Button(
+                    onClick = { timKiemSach() },
+                    modifier = Modifier
+                        .height(56.dp),
+                    shape = RoundedCornerShape(topEnd = 25.dp, bottomEnd = 25.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = Color.White
+                    ),
+                    contentPadding = PaddingValues(horizontal = 16.dp)
+                ) {
+                    Text("Tìm")
+                }
+            }
         }
 
-        OutlinedTextField(
-            value = keyword,
-            onValueChange = { keyword = it },
-            label = { Text("Nhập tên sách hoặc tác giả") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
-            keyboardActions = KeyboardActions(
-                onSearch = { timKiemSach() }
-            )
-        )
-
         // Gợi ý bên dưới ô nhập
-        if (suggestions.isNotEmpty()) {
+        if (suggestions.isNotEmpty() && !isSearchPerformed) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -108,7 +142,7 @@ fun ExploreScreen(
                             .fillMaxWidth()
                             .clickable {
                                 keyword = sach.tensach
-                                timKiemSach()
+                                // Không tìm kiếm ở đây!
                             }
                             .padding(vertical = 8.dp, horizontal = 4.dp)
                     ) {
@@ -124,14 +158,6 @@ fun ExploreScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Button(
-            onClick = { timKiemSach() },
-            modifier = Modifier.align(Alignment.End)
-        ) {
-            Text("Tìm")
-        }
 
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -143,10 +169,14 @@ fun ExploreScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 4.dp)
+                            .padding(start = 5.dp, end = 5.dp)
                             .clickable {
                                 navController.navigate(NavigationItem.DETAIL.createRoute(sach.id))
                             },
-                        elevation = CardDefaults.cardElevation(4.dp)
+                        elevation = CardDefaults.cardElevation(4.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface
+                        )
                     ) {
                         Row(modifier = Modifier.padding(8.dp)) {
                             Image(
@@ -168,3 +198,4 @@ fun ExploreScreen(
         }
     }
 }
+
