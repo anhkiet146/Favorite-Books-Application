@@ -18,6 +18,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -34,13 +35,22 @@ fun SavedScreen(
     val favoriteIds by viewModel.favoriteBookIds.collectAsState()
     val allBooks = viewModel.getAllBooks()
     var searchQuery by remember { mutableStateOf("") }
-
+    val layoutDirection = LocalLayoutDirection.current
     val filteredBooks = allBooks.filter {
         it.id.toString() in favoriteIds &&
                 (it.tensach.contains(searchQuery, ignoreCase = true) ||
                         it.tacgia.contains(searchQuery, ignoreCase = true))
     }
     Scaffold(
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .padding(
+                start = WindowInsets.safeDrawing.asPaddingValues()
+                    .calculateStartPadding(layoutDirection),
+                end = WindowInsets.safeDrawing.asPaddingValues()
+                    .calculateEndPadding(layoutDirection),
+            ),
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(

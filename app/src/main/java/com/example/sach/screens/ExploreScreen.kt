@@ -27,6 +27,9 @@ import com.example.sach.data.DSsach
 import com.example.sach.navigation.NavigationItem
 import com.example.sach.ui.BookViewModel
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.ui.platform.LocalLayoutDirection
+
 
 
 @Composable
@@ -36,7 +39,7 @@ fun ExploreScreen(
 ) {
     var keyword by rememberSaveable  { mutableStateOf("") }
     var ketQua by rememberSaveable  { mutableStateOf<List<Book>>(emptyList()) }
-
+    val layoutDirection = LocalLayoutDirection.current
     val focusManager = LocalFocusManager.current
     val allBooks = DSsach()
     var isSearchPerformed by remember { mutableStateOf(false) }
@@ -83,8 +86,16 @@ fun ExploreScreen(
         }.take(5)
     }
 
-    Column(modifier = Modifier
-        .fillMaxSize()
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .padding(
+                start = WindowInsets.safeDrawing.asPaddingValues()
+                    .calculateStartPadding(layoutDirection),
+                end = WindowInsets.safeDrawing.asPaddingValues()
+                    .calculateEndPadding(layoutDirection),
+            ),
     ) {
         TopAppBar(
             onBackClick = { navController.popBackStack() }
