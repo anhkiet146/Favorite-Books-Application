@@ -84,7 +84,7 @@ fun HomeScreen(
                         Image(
                             painter = painterResource(id = R.drawable.ten_logo_removebg_preview),
                             contentDescription = null,
-                            modifier = Modifier.size(120.dp),
+                            modifier = Modifier.size(170.dp),
                             contentScale = ContentScale.Fit
                         )
                     }
