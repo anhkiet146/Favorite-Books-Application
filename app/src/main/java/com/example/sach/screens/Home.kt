@@ -107,12 +107,12 @@ fun HomeScreen(
                 .padding(16.dp)
         ) {
             Text(
-                text = "Recommended for you",
+                text = "Đề xuất cho bạn",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                "Handpicked based on your reading preferences.",
+                "Lựa chọn dành riêng cho bạn dựa trên sở thích đọc sách.",
                 style = MaterialTheme.typography.bodySmall
             )
 
@@ -129,12 +129,12 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "New Releases",
+                text = "Sách mới ra mắt",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                "Newly released books spanning various genres.",
+                "Các sách mới ra mắt thuộc nhiều thể loại đa dạng.",
                 style = MaterialTheme.typography.bodySmall
             )
 
@@ -151,11 +151,11 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Trending Now",
+                text = "Đang thịnh hành",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
-            Text("Books that are popular this week.", style = MaterialTheme.typography.bodySmall)
+            Text("Những cuốn sách nỗi bật trong tuần này.", style = MaterialTheme.typography.bodySmall)
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -169,11 +169,11 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "You May Also Like",
+                text = "Đề xuất dành cho bạn",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
-            Text("Similar to what you've been reading.", style = MaterialTheme.typography.bodySmall)
+            Text("Gợi ý dựa trên những cuốn bạn đã đọc.", style = MaterialTheme.typography.bodySmall)
 
             Spacer(modifier = Modifier.height(8.dp))
 

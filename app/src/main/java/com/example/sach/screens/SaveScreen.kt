@@ -68,7 +68,7 @@ fun SavedScreen(
                 .padding(12.dp)
         ) {
             Text(
-                text = "My Collections",
+                text = "Bộ sưu tập của tôi",
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
@@ -86,7 +86,7 @@ fun SavedScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "No favorite books yet.",
+                        text = "Bạn chưa có sách yêu thích.",
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onBackground
                     )
