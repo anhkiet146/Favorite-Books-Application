@@ -1,53 +1,33 @@
 package com.example.sach.ui
 
-import androidx.compose.runtime.mutableStateListOf
-import androidx.lifecycle.ViewModel
-import com.example.sach.model.Book
+import com.example.sach.data.Book
 import com.example.sach.data.DSsach
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.sach.data.FavoritePreferences
+import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.asStateFlow
 
-class BookViewModel(application: Application) : AndroidViewModel(application) {
+class BookViewModel : ViewModel() {
 
-    private val favoritePrefs = FavoritePreferences(application)
+    private val _bookList = MutableStateFlow(DSsach())
+    val bookList: StateFlow<List<Book>> = _bookList.asStateFlow()
 
-    private val _favoriteBookIds = MutableStateFlow<Set<String>>(emptySet())
-    val favoriteBookIds: StateFlow<Set<String>> = _favoriteBookIds
-
-    private val _books = mutableStateListOf<Book>().apply { addAll(DSsach()) }
-    val books: List<Book> = _books
-
-    init {
-        viewModelScope.launch {
-            favoritePrefs.favoriteBookIds.collect {
-                _favoriteBookIds.value = it
-            }
-        }
-    }
+    val favoriteBooks: StateFlow<List<Book>> = MutableStateFlow(
+        DSsach().filter { it.favorite }
+    )
 
     fun toggleFavorite(bookId: Int) {
-        val index = _books.indexOfFirst { it.id == bookId }
-        if (index != -1) {
-            val current = _books[index]
-            _books[index] = current.copy(favorite = !_favoriteBookIds.value.contains(bookId.toString()))
+        val updated = _bookList.value.map { book ->
+            if (book.id == bookId) book.copy(favorite = !book.favorite) else book
         }
-        viewModelScope.launch {
-            favoritePrefs.toggleFavorite(bookId.toString())
-        }
-    }
-
-    fun getFavoriteBooks(): List<Book> {
-        return _books.filter { _favoriteBookIds.value.contains(it.id.toString()) }
+        _bookList.value = updated
     }
 
     fun getBookById(bookId: Int): Book? {
-        return _books.find { it.id == bookId }
+        return _bookList.value.find { it.id == bookId }
     }
 
-    fun getAllBooks(): List<Book> = _books
+    fun getFavoriteBooks(): List<Book> {
+        return _bookList.value.filter { it.favorite }
+    }
 }

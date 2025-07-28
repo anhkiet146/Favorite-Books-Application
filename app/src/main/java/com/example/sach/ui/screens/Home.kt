@@ -1,4 +1,4 @@
-package com.example.sach.screens
+package com.example.sach.ui.screens
 
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
@@ -23,22 +23,18 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.sach.R
-import com.example.sach.model.Book
-import com.example.sach.navigation.NavigationItem
+import com.example.sach.data.Book
 import com.example.sach.ui.BookViewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
-import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import kotlin.system.exitProcess
-
-
-
+import com.example.sach.ui.NavigationItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,17 +47,18 @@ fun HomeScreen(
     val context = LocalContext.current
     var backPressedTime by remember { mutableLongStateOf(0L) }
 
+    val books by viewModel.bookList.collectAsState()
+
     BackHandler {
         val currentTime = System.currentTimeMillis()
         if (currentTime - backPressedTime < 2000) {
-            // Nhấn lần 2 trong vòng 2 giây -> thoát ứng dụng
             exitProcess(0)
         } else {
-            // Nhấn lần 1 -> cảnh báo
             backPressedTime = currentTime
             Toast.makeText(context, "Nhấn lần nữa để thoát", Toast.LENGTH_SHORT).show()
         }
     }
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -106,105 +103,64 @@ fun HomeScreen(
                 .verticalScroll(scrollState)
                 .padding(16.dp)
         ) {
-            Text(
-                text = "Đề xuất cho bạn",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                "Lựa chọn dành riêng cho bạn dựa trên sở thích đọc sách.",
-                style = MaterialTheme.typography.bodySmall
-            )
-
+            Text("Đề xuất cho bạn", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            Text("Lựa chọn dành riêng cho bạn dựa trên sở thích đọc sách.", style = MaterialTheme.typography.bodySmall)
             Spacer(modifier = Modifier.height(8.dp))
 
             LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(viewModel.books.take(5)) { book ->
-                    AnimatedVisibility(visible = true) {
-                        BookCard(book = book, viewModel = viewModel, navController)
-                    }
+                items(books.take(5)) {
+                    BookCard(book = it, viewModel = viewModel, navController)
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text(
-                text = "Sách mới ra mắt",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                "Các sách mới ra mắt thuộc nhiều thể loại đa dạng.",
-                style = MaterialTheme.typography.bodySmall
-            )
-
+            Text("Sách mới ra mắt", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            Text("Các sách mới ra mắt thuộc nhiều thể loại đa dạng.", style = MaterialTheme.typography.bodySmall)
             Spacer(modifier = Modifier.height(8.dp))
 
             LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(viewModel.books.drop(5).take(5)) { book ->
-                    AnimatedVisibility(visible = true) {
-                        BookCard(book = book, viewModel = viewModel, navController)
-                    }
+                items(books.drop(5).take(5)) {
+                    BookCard(book = it, viewModel = viewModel, navController)
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = "Đang thịnh hành",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Text("Những cuốn sách nỗi bật trong tuần này.", style = MaterialTheme.typography.bodySmall)
-
+            Text("Đang thịnh hành", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            Text("Những cuốn sách nổi bật trong tuần này.", style = MaterialTheme.typography.bodySmall)
             Spacer(modifier = Modifier.height(8.dp))
 
             LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(viewModel.books.drop(10).take(5)) { book ->
-                    AnimatedVisibility(visible = true) {
-                        BookCard(book = book, viewModel = viewModel, navController)
-                    }
+                items(books.drop(10).take(5)) {
+                    BookCard(book = it, viewModel = viewModel, navController)
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
 
-            Text(
-                text = "Đề xuất dành cho bạn",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text("Đề xuất dành cho bạn", fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Text("Gợi ý dựa trên những cuốn bạn đã đọc.", style = MaterialTheme.typography.bodySmall)
-
             Spacer(modifier = Modifier.height(8.dp))
 
             LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(viewModel.books.drop(15).take(4)) { book ->
-                    AnimatedVisibility(visible = true) {
-                        BookCard(book = book, viewModel = viewModel, navController)
-                    }
+                items(books.drop(15).take(4)) {
+                    BookCard(book = it, viewModel = viewModel, navController)
                 }
             }
         }
     }
 }
 
-
 @Composable
 fun BookCard(book: Book, viewModel: BookViewModel, navController: NavHostController) {
-    val favoriteIds by viewModel.favoriteBookIds.collectAsState()
-    val isFavorite = favoriteIds.contains(book.id.toString())
-
     Card(
         modifier = Modifier
             .width(160.dp)
             .height(280.dp)
             .clickable {
-                navController.navigate(NavigationItem.DETAIL.createRoute(book.id))
+                navController.navigate(NavigationItem.Detail.createRoute(book.id))
             },
         elevation = CardDefaults.cardElevation(4.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             Column(
@@ -221,18 +177,8 @@ fun BookCard(book: Book, viewModel: BookViewModel, navController: NavHostControl
                     contentScale = ContentScale.Crop
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = book.tensach,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Text(
-                    text = book.tacgia,
-                    style = MaterialTheme.typography.bodySmall,
-                    maxLines = 1,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Text(book.tensach, style = MaterialTheme.typography.titleSmall, fontSize = 18.sp)
+                Text(book.tacgia, style = MaterialTheme.typography.bodySmall, maxLines = 1)
             }
 
             IconButton(
@@ -242,9 +188,9 @@ fun BookCard(book: Book, viewModel: BookViewModel, navController: NavHostControl
                     .padding(8.dp)
             ) {
                 Icon(
-                    imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    imageVector = if (book.favorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                     contentDescription = "Toggle Favorite",
-                    tint = if (isFavorite)
+                    tint = if (book.favorite)
                         MaterialTheme.colorScheme.primary
                     else
                         MaterialTheme.colorScheme.onSurfaceVariant
@@ -253,8 +199,6 @@ fun BookCard(book: Book, viewModel: BookViewModel, navController: NavHostControl
         }
     }
 }
-
-
 
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
@@ -271,11 +215,11 @@ fun BottomNavigationBar(navController: NavHostController) {
         BottomNavItemWithImage(
             label = "Home",
             iconRes = R.drawable.home_alt_2,
-            selected = currentRoute == NavigationItem.HOME.route
+            selected = currentRoute == NavigationItem.Home.route
         ) {
-            if (currentRoute != NavigationItem.HOME.route) {
-                navController.navigate(NavigationItem.HOME.route) {
-                    popUpTo(NavigationItem.HOME.route) { inclusive = true }
+            if (currentRoute != NavigationItem.Home.route) {
+                navController.navigate(NavigationItem.Home.route) {
+                    popUpTo(NavigationItem.Home.route) { inclusive = true }
                     launchSingleTop = true
                 }
             }
@@ -284,11 +228,11 @@ fun BottomNavigationBar(navController: NavHostController) {
         BottomNavItemWithImage(
             label = "Search",
             iconRes = R.drawable.search,
-            selected = currentRoute == NavigationItem.EXPLORE.route
+            selected = currentRoute == NavigationItem.Explore.route
         ) {
-            if (currentRoute != NavigationItem.EXPLORE.route) {
-                navController.navigate(NavigationItem.EXPLORE.route) {
-                    popUpTo(NavigationItem.EXPLORE.route) { inclusive = true }
+            if (currentRoute != NavigationItem.Explore.route) {
+                navController.navigate(NavigationItem.Explore.route) {
+                    popUpTo(NavigationItem.Explore.route) { inclusive = true }
                     launchSingleTop = true
                 }
             }
@@ -297,18 +241,17 @@ fun BottomNavigationBar(navController: NavHostController) {
         BottomNavItemWithImage(
             label = "Favorites",
             iconRes = R.drawable.bookmark_plus_alt,
-            selected = currentRoute == NavigationItem.SAVED.route
+            selected = currentRoute == NavigationItem.Saved.route
         ) {
-            if (currentRoute != NavigationItem.SAVED.route) {
-                navController.navigate(NavigationItem.SAVED.route) {
-                    popUpTo(NavigationItem.SAVED.route) { inclusive = true }
+            if (currentRoute != NavigationItem.Saved.route) {
+                navController.navigate(NavigationItem.Saved.route) {
+                    popUpTo(NavigationItem.Saved.route) { inclusive = true }
                     launchSingleTop = true
                 }
             }
         }
     }
 }
-
 
 @Composable
 fun BottomNavItemWithImage(
@@ -335,7 +278,7 @@ fun BottomNavItemWithImage(
             modifier = Modifier
                 .size(24.dp)
                 .clickable(onClick = onClick),
-            colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(color)
+            colorFilter = ColorFilter.tint(color)
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
@@ -345,14 +288,3 @@ fun BottomNavItemWithImage(
         )
     }
 }
-
-
-
-
-
-//@Preview
-//@Composable
-//fun PreviewHomeScreen() {
-//    val bookViewModel: BookViewModel = viewModel()
-//    HomeScreen()
-//}

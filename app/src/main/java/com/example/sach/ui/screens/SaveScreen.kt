@@ -1,4 +1,4 @@
-package com.example.sach.screens
+package com.example.sach.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -22,8 +22,8 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.sach.model.Book
-import com.example.sach.navigation.NavigationItem
+import com.example.sach.data.Book
+import com.example.sach.ui.NavigationItem
 import com.example.sach.ui.BookViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -32,15 +32,16 @@ fun SavedScreen(
     navController: NavHostController,
     viewModel: BookViewModel = viewModel()
 ) {
-    val favoriteIds by viewModel.favoriteBookIds.collectAsState()
-    val allBooks = viewModel.getAllBooks()
-    var searchQuery by remember { mutableStateOf("") }
     val layoutDirection = LocalLayoutDirection.current
-    val filteredBooks = allBooks.filter {
-        it.id.toString() in favoriteIds &&
+    val books by viewModel.bookList.collectAsState()
+    var searchQuery by remember { mutableStateOf("") }
+
+    val filteredBooks = books.filter {
+        it.favorite &&
                 (it.tensach.contains(searchQuery, ignoreCase = true) ||
                         it.tacgia.contains(searchQuery, ignoreCase = true))
     }
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -64,15 +65,18 @@ fun SavedScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .padding(12.dp)
+                .padding(PaddingValues(
+                    start = 12.dp,
+                    end = 12.dp,
+                    top = innerPadding.calculateTopPadding(),
+                    bottom = innerPadding.calculateBottomPadding()
+                ))
         ) {
             Text(
                 text = "Bộ sưu tập của tôi",
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Start,
                 fontWeight = FontWeight.Bold
             )
@@ -101,8 +105,8 @@ fun SavedScreen(
                     items(filteredBooks) { book ->
                         BookCollectionItem(
                             book = book,
-                            isFavorite = favoriteIds.contains(book.id.toString()),
-                            navController,
+                            isFavorite = book.favorite,
+                            navController = navController,
                             onFavoriteClick = {
                                 viewModel.toggleFavorite(book.id)
                             }
@@ -113,6 +117,7 @@ fun SavedScreen(
         }
     }
 }
+
 
 @Composable
 fun BookCollectionItem(
@@ -126,7 +131,7 @@ fun BookCollectionItem(
             .fillMaxWidth()
             .height(160.dp)
             .clickable {
-                navController.navigate(NavigationItem.DETAIL.createRoute(book.id))
+                navController.navigate(NavigationItem.Detail.createRoute(book.id))
             },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(

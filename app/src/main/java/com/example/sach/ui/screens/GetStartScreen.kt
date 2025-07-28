@@ -1,4 +1,4 @@
-package com.example.sach
+package com.example.sach.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -17,9 +16,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.draw.alpha
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.*
-import com.example.sach.navigation.NavigationItem
+import com.example.sach.ui.NavigationItem
 import androidx.compose.material3.MaterialTheme
-
+import com.example.sach.R
 
 
 @Composable
@@ -37,9 +36,9 @@ fun GetStartScreen(
     LaunchedEffect(Unit) {
         startAnimation = true
         delay(1000)
-        onSplashFinished() // Gọi để đánh dấu splash đã chạy
-        navController.navigate(NavigationItem.HOME.route) {
-            popUpTo(NavigationItem.SPLASH.route) {
+        onSplashFinished()
+        navController.navigate(NavigationItem.Home.route) {
+            popUpTo(NavigationItem.Splash.route) {
                 inclusive = true
             }
         }

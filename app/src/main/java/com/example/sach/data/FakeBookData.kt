@@ -1,7 +1,6 @@
 package com.example.sach.data
 
 import com.example.sach.R
-import com.example.sach.model.Book
 
 fun DSsach(): List<Book> = listOf(
     Book(
@@ -159,29 +158,5 @@ fun DSsach(): List<Book> = listOf(
         hinhanh = R.drawable.toi_tai_gioi,
         mota = "\"Tôi tài giỏi, bạn cũng thế!\" là cuốn sách truyền cảm hứng mạnh mẽ cho học sinh, sinh viên và những người đang tìm lại niềm tin vào bản thân. Adam Khoo – một học sinh từng bị xem là “bất tài” – đã kể lại hành trình vươn lên của chính mình nhờ tư duy tích cực, phương pháp học thông minh và niềm tin vào bản thân. Thông điệp chính của sách là: mọi người đều có thể giỏi – nếu biết cách học và tin vào chính mình.\n" +
                 "\n"
-    ),
-//    Book(
-//        id = 20,
-//        tensach = "Và Rồi Chẳng Còn Ai",
-//        tacgia = "Agatha Christie",
-//        namxb = "2021",
-//        hinhanh = R.drawable.nxbtre_full_24582021_115846,
-//        mota = ""
-//    ),
-//    Book(
-//        id = 21,
-//        tensach = "Và Rồi Chẳng Còn Ai",
-//        tacgia = "Agatha Christie",
-//        namxb = "2021",
-//        hinhanh = R.drawable.nxbtre_full_24582021_115846,
-//        mota = ""
-//    ),
-//    Book(
-//        id = 22,
-//        tensach = "Và Rồi Chẳng Còn Ai",
-//        tacgia = "Agatha Christie",
-//        namxb = "2021",
-//        hinhanh = R.drawable.nxbtre_full_24582021_115846,
-//        mota = ""
-//    ),
+    )
 )

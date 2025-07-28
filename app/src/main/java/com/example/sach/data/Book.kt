@@ -1,4 +1,4 @@
-package com.example.sach.model
+package com.example.sach.data
 
 data class Book(
     val id: Int,

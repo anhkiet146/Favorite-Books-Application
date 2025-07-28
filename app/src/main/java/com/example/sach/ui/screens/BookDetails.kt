@@ -1,4 +1,4 @@
-package com.example.sach.screens
+package com.example.sach.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -35,23 +35,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.sach.model.Book
+import com.example.sach.data.Book
 import com.example.sach.ui.BookViewModel
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 
 @Composable
 fun BookDetails(
     navController: NavHostController,
     bookId: Int?,
-    viewModel: BookViewModel
+    viewModel: BookViewModel = viewModel()
 ) {
     val layoutDirection = LocalLayoutDirection.current
-    val book = viewModel.getBookById(bookId ?: -1)
-    val favoriteIds by viewModel.favoriteBookIds.collectAsState()
-    val isFavorite = favoriteIds.contains(book?.id.toString())
+    val books by viewModel.bookList.collectAsState() // Lấy toàn bộ danh sách từ StateFlow
+    val book = books.find { it.id == bookId }
 
     Surface(
         modifier = Modifier
@@ -71,7 +71,7 @@ fun BookDetails(
             if (book != null) {
                 DetailContent(
                     book = book,
-                    isFavorite = isFavorite,
+                    isFavorite = book.favorite,
                     onFavoriteClick = { viewModel.toggleFavorite(book.id) }
                 )
             } else {
@@ -154,7 +154,6 @@ fun DetailContent(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Row chứa tác giả và icon yêu thích
         Row(
             modifier = Modifier
                 .fillMaxWidth()

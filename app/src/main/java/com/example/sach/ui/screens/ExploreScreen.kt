@@ -1,4 +1,4 @@
-package com.example.sach.screens
+package com.example.sach.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -9,7 +9,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -22,9 +21,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.sach.model.Book
+import com.example.sach.data.Book
 import com.example.sach.data.DSsach
-import com.example.sach.navigation.NavigationItem
+import com.example.sach.ui.NavigationItem
 import com.example.sach.ui.BookViewModel
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.foundation.layout.safeDrawing
@@ -42,9 +41,8 @@ fun ExploreScreen(
     val layoutDirection = LocalLayoutDirection.current
     val focusManager = LocalFocusManager.current
     val allBooks = DSsach()
-    var isSearchPerformed by remember { mutableStateOf(false) }
+    var isSearchPerformed by rememberSaveable { mutableStateOf(false) }
 
-    // Hàm bỏ dấu tiếng Việt
     fun String.normalize(): String {
         return this.lowercase()
             .replace(Regex("[àáạảãâầấậẩẫăằắặẳẵ]"), "a")
@@ -56,7 +54,6 @@ fun ExploreScreen(
             .replace(Regex("đ"), "d")
     }
 
-    // Hàm tìm kiếm khi bấm nút hoặc Enter
     fun timKiemSach() {
         val keywords = keyword.normalize().split("\\s+".toRegex())
         ketQua = if (keywords.isEmpty()) emptyList()
@@ -71,10 +68,9 @@ fun ExploreScreen(
         focusManager.clearFocus()
     }
 
-    // Gợi ý realtime khi đang gõ
     val suggestions = remember(keyword) {
         val normalized = keyword.normalize()
-        if (normalized.length < 2) return@remember emptyList() // Không gợi ý nếu quá ngắn
+        if (normalized.length < 2) return@remember emptyList()
 
         val keywords = normalized.split("\\s+".toRegex())
         allBooks.filter { book ->
@@ -111,7 +107,7 @@ fun ExploreScreen(
                     value = keyword,
                     onValueChange = {
                         keyword = it
-                        isSearchPerformed = false // reset cờ khi người dùng gõ lại
+                        isSearchPerformed = false
                     },
                     placeholder = { Text("Nhập tên sách hoặc tác giả") },
                     modifier = Modifier
@@ -140,7 +136,6 @@ fun ExploreScreen(
             }
         }
 
-        // Gợi ý bên dưới ô nhập
         if (suggestions.isNotEmpty() && !isSearchPerformed) {
             LazyColumn(
                 modifier = Modifier
@@ -153,7 +148,7 @@ fun ExploreScreen(
                             .fillMaxWidth()
                             .clickable {
                                 keyword = sach.tensach
-                                // Không tìm kiếm ở đây!
+                                timKiemSach()  // thực hiện tìm kiếm ngay
                             }
                             .padding(vertical = 8.dp, horizontal = 4.dp)
                     ) {
@@ -172,7 +167,6 @@ fun ExploreScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Kết quả chính thức sau khi tìm
         if (ketQua.isNotEmpty()) {
             LazyColumn {
                 items(ketQua) { sach ->
@@ -182,7 +176,7 @@ fun ExploreScreen(
                             .padding(vertical = 4.dp)
                             .padding(start = 5.dp, end = 5.dp)
                             .clickable {
-                                navController.navigate(NavigationItem.DETAIL.createRoute(sach.id))
+                                navController.navigate(NavigationItem.Detail.createRoute(sach.id))
                             },
                         elevation = CardDefaults.cardElevation(4.dp),
                         colors = CardDefaults.cardColors(
