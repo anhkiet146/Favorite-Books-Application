@@ -179,6 +179,7 @@ fun BookCard(book: Book, viewModel: BookViewModel, navController: NavHostControl
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(book.tensach, style = MaterialTheme.typography.titleSmall, fontSize = 18.sp)
                 Text(book.tacgia, style = MaterialTheme.typography.bodySmall, maxLines = 1)
+                Text(text = "Xuất bản: " + book.namxb, style = MaterialTheme.typography.bodySmall, maxLines = 1)
             }
 
             IconButton(
